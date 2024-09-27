@@ -1,0 +1,115 @@
+﻿@model ImportUserPreviewVM
+
+<div class="card bg-purple text-white mb-4">
+    <div class="card-body">
+        <h1 class="text-center mb-0">User List Preview</h1>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover table-bordered shadow-sm">
+        <thead class="bg-purple text-white">
+            <tr>
+                <th>Email</th>
+                <th>Full Name</th>
+                <th>Student Code</th>
+                <th>Phone</th>
+                <th>Gender</th>
+                <th>Validation Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Results)
+            {
+                <tr>
+                    <td class="align-middle">@item.Record.Email</td>
+                    <td class="align-middle">@item.Record.FullName</td>
+                    <td class="align-middle">@item.Record.StudentCode</td>
+                    <td class="align-middle">@item.Record.Phone</td>
+                    <td class="align-middle">@item.Record.Gender</td>
+                    <td class="align-middle">
+                        @if (item.Errors.Any())
+                        {
+                            <ul>
+                                @foreach (var error in item.Errors)
+                                {
+                                    <li class="text-danger">@error</li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <span class="text-success">Valid</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<form asp-action="ImportConfirm" method="post">
+    <input type="hidden" name="DTOJson" value='@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Results.Where(r => !r.Errors.Any()).Select(r => r.Record)))' />
+    <button type="submit" class="bg-success">Confirm Import</buttona>
+</form>
+
+
+<style>
+    /* From Uiverse.io by nikk7007 */
+    .switch {
+        --false: #00308F;
+        --true: #FF5733;
+    }
+
+    input[type=checkbox] {
+        appearance: none;
+        height: 2rem;
+        width: 8rem;
+        background-color: #fff;
+        position: relative;
+        border-radius: .2em;
+        cursor: pointer;
+    }
+
+        input[type=checkbox]::before {
+            text-align: center;
+            color: #fff;
+            font-weight: bold;
+            content: 'Mentor';
+            display: block;
+            height: 1.9em;
+            width: 4em;
+            transform: translate(-50%, -50%);
+            position: absolute;
+            top: 50%;
+            left: calc(1.9em/2 + .3em);
+            background-color: var(--false);
+            border-radius: .2em;
+            transition: .3s ease;
+        }
+
+        input[type=checkbox]:checked::before {
+            content: "Student";
+            background-color: var(--true);
+            left: calc(100% - (1.9em/2 + .3em));
+        }
+
+    /*=============================*/
+    .bg-purple {
+        background-color: #6f42c1;
+    }
+
+    .text-purple {
+        color: #6f42c1;
+    }
+
+    .btn-purple {
+        background-color: #6f42c1;
+        color: white;
+    }
+
+        .btn-purple:hover {
+            background-color: #5a32a3;
+            color: white;
+        }
+</style>

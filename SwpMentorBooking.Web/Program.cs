@@ -19,6 +19,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<CSVFileService>();
 builder.Services.AddScoped<AutoMapperService>();
+builder.Services.AddScoped<PasswordGeneratorService>();
 
 // Add Auto-mapper
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
