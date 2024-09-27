@@ -1,5 +1,11 @@
+using Email.Services;
+ using Microsoft.AspNetCore.Identity;
+    using Microsoft.EntityFrameworkCore;
+    using Email.Models;
+
 namespace Email
 {
+   
     public class Program
     {
         public static void Main(string[] args)
@@ -9,13 +15,25 @@ namespace Email
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
+            // Configure Entity Framework and ApplicationDbContext
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            // Configure Identity
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
+
+            // Register the email service
+            builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
+            builder.Services.AddScoped<EmailService>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
@@ -24,13 +42,15 @@ namespace Email
 
             app.UseRouting();
 
+            app.UseAuthentication(); // Ensure authentication is used
             app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=Account}/{action=Login}/{id?}");
 
             app.Run();
         }
     }
+
 }
