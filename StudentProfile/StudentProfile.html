@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="index.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid min-vh-100 d-flex flex-column p-0">
+        <header class="py-3 bg-white shadow-sm w-100">
+            <div class="container-fluid">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <img src="https://images.unsplash.com/photo-1661956602116-aa6865609028?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=64&h=64&q=80" alt="Mentoring Logo" class="me-2" width="40" height="40">
+                        <h1 class="h4 mb-0">Mentoring</h1>
+                    </div>
+                    <div class="flex-grow-1 mx-4">
+                        <form class="d-flex">
+                            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                            <button class="btn btn-outline-primary" type="submit">Search</button>
+                        </form>
+                    </div>
+                    <div class="dropdown">
+                        <a href="#" class="d-flex align-items-center text-dark text-decoration-none" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=40&h=40&q=80" alt="Student" width="32" height="32" class="rounded-circle me-2">
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end text-small shadow" aria-labelledby="dropdownUser1">
+                            <li><span class="dropdown-item-text" id="studentNameDropdown">Jane Doe</span></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="dropdownLogout">Log out</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <main class="flex-grow-1 py-4">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-3 mb-4 mb-md-0">
+                        <div class="list-group">
+                            <a href="#" class="list-group-item list-group-item-action" id="homepage">Homepage</a>
+                            <a href="#" class="list-group-item list-group-item-action" id="groupMembers">Group Members</a>
+                            <a href="#" class="list-group-item list-group-item-action" id="schedule">Schedule</a>
+                            <a href="#" class="list-group-item list-group-item-action" id="history">History</a>
+                            <a href="#" class="list-group-item list-group-item-action" id="profile">Profile</a>
+                            <a href="#" class="list-group-item list-group-item-action" id="logout">Log out</a>
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="card">
+                            <div class="card-body" id="contentArea">
+                                <!-- Content will be dynamically loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Logout Confirmation Modal -->
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to log out?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="confirmLogout">Logout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editProfileForm">
+                        <div class="mb-3">
+                            <label for="editName" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="editName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="editEmail" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editDob" class="form-label">Date of Birth</label>
+                            <input type="date" class="form-control" id="editDob" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editGender" class="form-label">Gender</label>
+                            <select class="form-select" id="editGender" required>
+                                <option value="">Choose...</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editPhone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="editPhone" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveProfileChanges">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let studentData = {
+            name: "Jane Doe",
+            email: "jane.doe@example.com",
+            dob: "1995-05-15",
+            gender: "female",
+            phone: "+1234567890"
+        };
+
+        let mentors = [
+            { name: "Dr. Robert Johnson", image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=150&h=150&q=80", description: "Expert in Machine Learning" },
+            { name: "Prof. Lisa Williams", image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=150&h=150&q=80", description: "Specialist in Data Science" },
+            { name: "Dr. Michael Chen", image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=150&h=150&q=80", description: "AI and Robotics Expert" },
+            { name: "Dr. Sarah Thompson", image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=150&h=150&q=80", description: "Bioinformatics Researcher" },
+            { name: "Prof. David Lee", image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=150&h=150&q=80", description: "Computer Vision Specialist" },
+            { name: "Dr. Emily Brown", image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=150&h=150&q=80", description: "Natural Language Processing Expert" }
+        ];
+
+        let bookingHistory = [
+            { date: "June 10, 2023", time: "2:00 PM - 3:00 PM", mentor: "Dr. Robert Johnson" },
+            { date: "June 5, 2023", time: "10:00 AM - 11:00 AM", mentor: "Prof. Lisa Williams" },
+            { date: "May 28, 2023", time: "3:00 PM - 4:00 PM", mentor: "Dr. Michael Chen" }
+        ];
+
+        function updateStudentInfo() {
+            document.getElementById('studentNameDropdown').textContent = studentData.name;
+        }
+
+        document.getElementById('homepage').addEventListener('click', function(e) {
+            e.preventDefault();
+            let mentorHtml = '<h5 class="card-title mb-4">Mentors</h5><div class="row">';
+            mentors.forEach((mentor, index) => {
+                mentorHtml += `
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <img src="${mentor.image}" class="card-img-top" alt="${mentor.name}">
+                            <div class="card-body">
+                                <h5 class="card-title">${mentor.name}</h5>
+                                <p class="card-text">${mentor.description}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                if ((index + 1) % 3 === 0) mentorHtml += '</div><div class="row">';
+            });
+            mentorHtml += '</div>';
+            document.getElementById('contentArea').innerHTML = mentorHtml;
+        });
+
+        document.getElementById('groupMembers').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('contentArea').innerHTML = `
+                <div class="row">
+                    <div class="col-md-9">
+                        <h5 class="card-title mb-4">Group Information</h5>
+                        <div class="mb-3">
+                            <strong>Group Name:</strong> ML Healthcare Innovators
+                        </div>
+                        <div class="mb-3">
+                            <strong>Topic:</strong> Machine Learning in Healthcare
+                        </div>
+                        <h6 class="mb-3">Group Members:</h6>
+                        <ul class="list-group">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                ${studentData.name}
+                                <span class="badge bg-primary rounded-pill">Leader</span>
+                            </li>
+                            <li class="list-group-item">Le Viet Minh tri</li>
+                            <li class="list-group-item">Hoang Xuan Hiep</li>
+                            <li class="list-group-item">Le Thi Minh Thu</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-warning text-danger mt-4 mt-md-0">
+                            <div class="card-body text-center p-2">
+                                <h6 class="card-title mb-1">Points</h6>
+                                <p class="card-text display-6 fw-bold mb-0">85</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        document.getElementById('profile').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('contentArea').innerHTML = `
+                <h5 class="card-title">Student Profile</h5>
+                <div class="text-center mb-3">
+                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=150&h=150&q=80" alt="${studentData.name}" class="rounded-circle">
+                </div>
+                <p><strong>Name:</strong> ${studentData.name}</p>
+                <p><strong>Email:</strong> ${studentData.email}</p>
+                <p><strong>Date of Birth:</strong> ${studentData.dob}</p>
+                <p><strong>Gender:</strong> ${studentData.gender}</p>
+                <p><strong>Phone Number:</strong> ${studentData.phone}</p>
+                <button class="btn btn-primary mt-3" id="editProfileBtn">Edit Profile</button>
+            `;
+
+            document.getElementById('editProfileBtn').addEventListener('click', function() {
+                var editProfileModal = new bootstrap.Modal(document.getElementById('editProfileModal'));
+                document.getElementById('editName').value = studentData.name;
+                document.getElementById('editEmail').value = studentData.email;
+                document.getElementById('editDob').value = studentData.dob;
+                document.getElementById('editGender').value = studentData.gender;
+                document.getElementById('editPhone').value = studentData.phone;
+                editProfileModal.show();
+            });
+        });
+
+        document.getElementById('schedule').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('contentArea').innerHTML = `
+                <h5 class="card-title">Mentor Schedule</h5>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Mentor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>June 15, 2023</td>
+                            <td>2:00 PM - 3:00 PM</td>
+                            <td>Dr. Robert Johnson</td>
+                        </tr>
+                        <tr>
+                            <td>June 22, 2023</td>
+                            <td>10:00 AM - 11:00 AM</td>
+                            <td>Prof. Lisa Williams</td>
+                        </tr>
+                        <tr>
+                            <td>June 29, 2023</td>
+                            <td>3:00 PM - 4:00 PM</td>
+                            <td>Dr. Michael Chen</td>
+                        </tr>
+                    </tbody>
+                </table>
+            `;
+        });
+
+        document.getElementById('history').addEventListener('click', function(e) {
+            e.preventDefault();
+            let historyHtml = `
+                <h5 class="card-title">Booking History</h5>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Mentor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            bookingHistory.forEach(booking => {
+                historyHtml += `
+                    <tr>
+                        <td>${booking.date}</td>
+                        <td>${booking.time}</td>
+                        <td>${booking.mentor}</td>
+                    </tr>
+                `;
+            });
+            historyHtml += `
+                    </tbody>
+                </table>
+            `;
+            document.getElementById('contentArea').innerHTML = historyHtml;
+        });
+
+        function showLogoutConfirmation() {
+            var logoutModal = new bootstrap.Modal(document.getElementById('logoutModal'));
+            logoutModal.show();
+        }
+
+        function logout() {
+            window.location.href = "login.html";
+        }
+
+        document.getElementById('logout').addEventListener('click', function(e) {
+            e.preventDefault();
+            showLogoutConfirmation();
+        });
+
+        document.getElementById('dropdownLogout').addEventListener('click', function(e) {
+            e.preventDefault();
+            showLogoutConfirmation();
+        });
+
+        document.getElementById('confirmLogout').addEventListener('click', function() {
+            logout();
+        });
+
+        document.getElementById('saveProfileChanges').addEventListener('click', function() {
+            studentData.name = document.getElementById('editName').value;
+            studentData.email = document.getElementById('editEmail').value;
+            studentData.dob = document.getElementById('editDob').value;
+            studentData.gender = document.getElementById('editGender').value;
+            studentData.phone = document.getElementById('editPhone').value;
+            updateStudentInfo();
+            var editProfileModal = bootstrap.Modal.getInstance(document.getElementById('editProfileModal'));
+            editProfileModal.hide();
+            document.getElementById('profile').click();
+        });
+
+        updateStudentInfo();
+        document.getElementById('homepage').click();
+    </script>
+</body>
+</html>

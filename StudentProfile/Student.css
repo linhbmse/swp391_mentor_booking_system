@@ -1,0 +1,126 @@
+body {
+    background-color: #e6f3ff;
+}
+
+.container-fluid {
+    background-color: #e6f3ff;
+}
+
+header {
+    background-color: #ffffff !important;
+}
+
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.list-group-item.active {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.dropdown-toggle::after {
+    display: none;
+}
+
+.dropdown-menu {
+    min-width: 8rem;
+}
+
+@media (max-width: 768px) {
+    .col-md-3 {
+        margin-bottom: 1rem;
+    }
+}
+
+.list-group-item:hover {
+    background-color: #007bff;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+#contentArea img {
+    max-width: 150px;
+    height: auto;
+}
+
+#contentArea table {
+    margin-top: 1rem;
+}
+
+#contentArea table th,
+#contentArea table td {
+    padding: 0.75rem;
+    vertical-align: top;
+    border-top: 1px solid #dee2e6;
+}
+
+#contentArea table thead th {
+    vertical-align: bottom;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.badge {
+    font-size: 0.8em;
+}
+
+.dropdown-item-text {
+    padding: 0.25rem 1rem;
+    color: #212529;
+    font-weight: bold;
+}
+
+.bg-warning.text-danger {
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+}
+
+.bg-warning.text-danger .card-title {
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+}
+
+.bg-warning.text-danger .card-text {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.list-group-item {
+    padding: 0.75rem 1.25rem;
+}
+
+.display-6 {
+    font-size: 2rem;
+}
+
+@media (min-width: 768px) {
+    .mt-md-0 {
+        margin-top: 0 !important;
+    }
+}
+
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.card-text {
+    font-size: 0.9rem;
+}
+
+#contentArea .row {
+    margin-bottom: 1rem;
+}
+
+#contentArea .col-md-4 {
+    margin-bottom: 1rem;
+}
