@@ -1,38 +1,51 @@
-﻿    using MailKit.Net.Smtp;
-    using MimeKit;
-    using Microsoft.Extensions.Options;
-    using System.Net.Mail;
+﻿using System;
+using System.Net.Mail;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+
 namespace Email.Services
 {
-    
-
     public class EmailService
     {
         private readonly SmtpSettings _smtpSettings;
 
         public EmailService(IOptions<SmtpSettings> smtpSettings)
         {
-            _smtpSettings = smtpSettings.Value;
+            _smtpSettings = smtpSettings.Value ?? throw new ArgumentNullException(nameof(smtpSettings), "SMTP settings cannot be null.");
         }
 
         public async Task SendEmailAsync(string toEmail, string subject, string body)
         {
-            var email = new MimeMessage();
-            email.From.Add(MailboxAddress.Parse(_smtpSettings.SenderEmail));
-            email.To.Add(MailboxAddress.Parse(toEmail));
-            email.Subject = subject;
-
-            var builder = new BodyBuilder { HtmlBody = body };
-            email.Body = builder.ToMessageBody();
-
-            using (var smtp = new MailKit.Net.Smtp.SmtpClient())
+            if (string.IsNullOrWhiteSpace(toEmail))
             {
-                await smtp.ConnectAsync(_smtpSettings.Server, _smtpSettings.Port, _smtpSettings.EnableSsl);
-                await smtp.AuthenticateAsync(_smtpSettings.Username, _smtpSettings.Password);
-                await smtp.SendAsync(email);
-                await smtp.DisconnectAsync(true);
+                throw new ArgumentException("Recipient email cannot be null or empty.", nameof(toEmail));
+            }
+
+            var mailMessage = new MailMessage
+            {
+                From = new MailAddress(_smtpSettings.SenderEmail),
+                Subject = subject,
+                Body = body,
+                IsBodyHtml = true,
+            };
+            mailMessage.To.Add(toEmail);
+
+            try
+            {
+                using (var smtpClient = SmtpClientFactory.CreateSmtpClient(
+                    _smtpSettings.Server,
+                    _smtpSettings.Port,
+                    _smtpSettings.Username,
+                    _smtpSettings.Password,
+                    _smtpSettings.EnableSsl))
+                {
+                    await smtpClient.SendMailAsync(mailMessage);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Failed to send email.", ex);
             }
         }
     }
 }
-

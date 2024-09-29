@@ -205,11 +205,5 @@ FOREIGN KEY (groupId) REFERENCES StudentGroup(id);
 
 
 -- Insert sample users with isFirstLogin set to true
-INSERT INTO [User] (email, password, fullName, phone, gender, profilePhoto, role, isFirstLogin, isActive)
-VALUES 
-    ('maihainam8@gmail.com', 'Password123!', 'Admin User', '1234567890', 'Male', 'admin_photo.jpg', 'admin', 1, 1),
-    ('student1@example.com', 'Password123!', 'Student One', '0987654321', 'Female', 'student1_photo.jpg', 'student', 1, 1),
-   ('mentor1@example.com', 'Password123!', 'Mentor One', '1231231234', 'Male', 'mentor1_photo.jpg', 'mentor', 1, 1),
-   ('student2@example.com', 'Password123!', 'Student Two', '3213213210', 'Female', 'student2_photo.jpg', 'student', 1, 1),
-  ('mentor2@example.com', 'Password123!', 'Mentor Two', '4564564567', 'Male', 'mentor2_photo.jpg', 'mentor', 1, 1);
-
+Insert Into [dbo].[User] ([email],[password],[fullName],[phone],[gender],[profilePhoto],[role],[isFirstLogin],[isActive])
+ Values('maihainam8@gmail.com', 'Password123!', 'Admin User', '1234567890', 'Male', 'admin_photo.jpg', 'admin', 1, 1);

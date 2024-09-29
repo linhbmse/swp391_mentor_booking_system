@@ -1,62 +1,68 @@
-﻿using Email.Models;
+﻿using Email.Data;
 using Email.Services;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace Email.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SwpFall24Context _Db = new SwpFall24Context();
         private readonly EmailService _emailService;
 
-        public AccountController(SignInManager<ApplicationUser> signInManager,
-                                 UserManager<ApplicationUser> userManager,
-                                 EmailService emailService)
+        public AccountController(IOptions<SmtpSettings> smtpSettings)
         {
-            _signInManager = signInManager;
-            _userManager = userManager;
-            _emailService = emailService;
+            _emailService = new EmailService(smtpSettings);
         }
 
-        [HttpGet]
-        public IActionResult Login()
+        // GET: User/Login
+        public ActionResult Login()
         {
-            // This renders the login page
             return View();
         }
 
+        // POST: User/Login
         [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel model)
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Login(string email, string password)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                return View(model);
-            }
+                // Retrieve the user from the database
+                var user = _Db.Users.FirstOrDefault(s => s.Email.Equals(email));
 
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user != null)
-            {
-                var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberMe, false);
-
-                if (result.Succeeded)
+                // Check if the user exists and password matches
+                if (user != null && user.Password.Equals(password))
                 {
-                    if (user.IsFirstLogin)
+                    // Check if this is the first login
+                    if (user.IsFirstLogin) // Assuming you have a property to check first login
                     {
-                        await _emailService.SendEmailAsync(user.Email, "Welcome to Our Web!",
-                            "<h1>Welcome to our system!</h1><p>We are glad to have you onboard.</p>");
+                        Console.WriteLine("First Login here bro ??");
+                        // Update first login to false
+                      
 
-                        user.IsFirstLogin = false;
-                        await _userManager.UpdateAsync(user);
+                        // Send welcome email
+                        string subject = "Welcome to FU-NextExam!";
+                        string body = $"<h1>Hello,</h1><p>Welcome to Our Mentoring Web! We're excited to have you on board.</p>";
+                        await _emailService.SendEmailAsync(user.Email, subject, body);
+                         user.IsFirstLogin = false;
+                        _Db.SaveChanges();
+                         return RedirectToAction("Index", "Home");
                     }
 
-                    return RedirectToAction("Index", "Home");
+                    // Set session variables (if needed)
+                    // Session["FullName"] = user.FirstName + " " + user.LastName;
+                    // Session["Email"] = user.Email;
+                    // Session["idUser"] = user.idUser;
+
+                    Console.WriteLine("Login Success");
+                }
+                else
+                {
+                    ViewBag.error = "Login failed";
                 }
             }
-
-            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-            return View(model);
+            return View();
         }
     }
 }
