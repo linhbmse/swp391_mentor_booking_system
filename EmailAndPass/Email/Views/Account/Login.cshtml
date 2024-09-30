@@ -15,6 +15,9 @@
             <label asp-for="RememberMe"></label>
             <input asp-for="RememberMe" type="checkbox" />
         </div>
+        <a href="@Url.Action("ForgotPassword", "Account")" class="forgot-password-link">
+            Forgot your password?
+        </a><br />
         <button type="submit">Login</button>
     </form>
 
