@@ -1,0 +1,44 @@
+# Ignore Visual Studio specific files and folders
+.vs/
+*.user
+*.suo
+
+# Ignore build output folders
+bin/
+obj/
+
+# Ignore package directories
+packages/
+node_modules/
+
+# Ignore temporary and log files
+*.log
+*.temp
+*.tmp
+*.cache
+*.pdb
+
+# Ignore generated code files
+*.g.cs
+*.g.i.cs
+*.dll
+
+# Ignore NuGet files
+project.lock.json
+project.fragment.lock.json
+*.nuget.props
+*.nuget.targets
+.nuget/
+
+# Ignore Web.config transform files
+Web.Debug.config
+Web.Release.config
+
+# Ignore Rider IDE files
+.idea/
+
+# Ignore macOS file system files
+.DS_Store
+
+# Ignore JetBrains Rider project-specific files
+.idea/
