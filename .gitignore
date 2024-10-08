@@ -1,15 +1,15 @@
 # Ignore Visual Studio specific files and folders
-.vs/
+.vs
 *.user
 *.suo
 
 # Ignore build output folders
-bin/
-obj/
-
+bin
+obj
+wwwroot
 # Ignore package directories
-packages/
-node_modules/
+packages
+node_modules
 
 # Ignore temporary and log files
 *.log
@@ -29,7 +29,6 @@ project.fragment.lock.json
 *.nuget.props
 *.nuget.targets
 .nuget/
-
 # Ignore Web.config transform files
 Web.Debug.config
 Web.Release.config
