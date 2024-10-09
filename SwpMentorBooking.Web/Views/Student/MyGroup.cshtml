@@ -19,8 +19,8 @@ else
         <div>
             @if (Model.Student.IsLeader)
             {
-                <a asp-action="AddMember" class="btn btn-info mx-3">Add new members</a>
-                <a asp-action="Edit" asp-route-groupId="@Model.StudentGroup.Id" class="btn btn-success mx-3">Edit group info</a>
+                <a asp-action="AddMember" asp-controller="StudentGroup" class="btn btn-info mx-3">Add new members</a>
+                <a asp-action="Edit" asp-controller="StudentGroup" asp-route-groupId="@Model.StudentGroup.Id" class="btn btn-success mx-3">Edit group info</a>
             }
             <h2>Group Name: @Model.StudentGroup.GroupName</h2>
             <p><strong>Topic:</strong> @Model.StudentGroup.Topic?.Name</p>

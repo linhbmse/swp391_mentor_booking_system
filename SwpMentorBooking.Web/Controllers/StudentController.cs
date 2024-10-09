@@ -49,7 +49,7 @@ namespace SwpMentorBooking.Web.Controllers
             return View(studentProfileVM);
         }
 
-        public IActionResult ManageGroup()
+        public IActionResult MyGroup()
         {
             var userEmail = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = _unitOfWork.User.Get(u => u.Email == userEmail, includeProperties: nameof(StudentDetail));
@@ -59,12 +59,20 @@ namespace SwpMentorBooking.Web.Controllers
                 return NotFound();
             }
 
-            var studentDetail = user.StudentDetail;
-            var studentGroup = _unitOfWork.StudentGroup.Get(g => g.Id == studentDetail.GroupId);
+            StudentDetail studentDetail = user.StudentDetail;
+            // Get the Student group info
+            StudentGroup studentGroup = _unitOfWork.StudentGroup.Get(g => g.Id == studentDetail.GroupId,
+                        includeProperties: $"{nameof(Topic)},{nameof(Wallet)},StudentDetails.User");
+            List<StudentDetail> groupMembers = studentGroup.StudentDetails.ToList();
 
+            StudentGroupDetailVM studentGroupDetailVM = new StudentGroupDetailVM
+            {
+                Student = studentDetail,
+                StudentGroup = studentGroup,
+                GroupMembers = groupMembers
+            };
 
-            return View(studentGroup);
+            return View(studentGroupDetailVM);
         }
-
     }
 }

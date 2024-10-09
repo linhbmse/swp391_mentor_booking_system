@@ -28,31 +28,6 @@ namespace SwpMentorBooking.Web.Controllers
         /// Student views his/ her group
         /// </summary>
         /// <returns>The group that the Student is currently in</returns>
-        public IActionResult MyGroup()
-        {
-            var userEmail = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = _unitOfWork.User.Get(u => u.Email == userEmail, includeProperties: nameof(StudentDetail));
-
-            if (user is null)
-            {
-                return NotFound();
-            }
-
-            StudentDetail studentDetail = user.StudentDetail;
-            // Get the Student group info
-            StudentGroup studentGroup = _unitOfWork.StudentGroup.Get(g => g.Id == studentDetail.GroupId,
-                        includeProperties: $"{nameof(Topic)},{nameof(Wallet)},StudentDetails.User");
-            List<StudentDetail> groupMembers = studentGroup.StudentDetails.ToList();
-
-            StudentGroupDetailVM studentGroupDetailVM = new StudentGroupDetailVM
-            {
-                Student = studentDetail,
-                StudentGroup = studentGroup,
-                GroupMembers = groupMembers
-            };
-
-            return View(studentGroupDetailVM);
-        }
 
         // GET: StudentGroupController/Details/5
         public IActionResult Details(int id)
@@ -106,12 +81,12 @@ namespace SwpMentorBooking.Web.Controllers
                     transaction.Commit();
                 }
                 TempData["success"] = $"Group \"{studentGroupVM.StudentGroup.GroupName}\" created successfully.";
-                return RedirectToAction(nameof(MyGroup));
+                return RedirectToAction("MyGroup", nameof(StudentController));
             }
             catch (Exception ex)
             {   // Logging
                 TempData["error"] = "An error occurred when creating new group.";
-                return RedirectToAction(nameof(MyGroup));
+                return RedirectToAction("MyGroup", nameof(StudentController));
             }
         }
 
@@ -204,47 +179,7 @@ namespace SwpMentorBooking.Web.Controllers
             }
 
             TempData["success"] = "Group member(s) added successfully.";
-            return RedirectToAction(nameof(MyGroup));
-        }
-        // GET: StudentGroupController/Edit/5
-        public IActionResult Edit(int id)
-        {
-            return View();
-        }
-        // POST: StudentGroupController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: StudentGroupController/Delete/5
-        public IActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: StudentGroupController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            return RedirectToAction("MyGroup", nameof(StudentController));
         }
     }
 }
