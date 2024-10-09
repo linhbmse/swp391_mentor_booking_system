@@ -2,22 +2,23 @@
 using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using SwpMentorBooking.Application.Common.Interfaces;
 using SwpMentorBooking.Infrastructure.Data;
 using SwpMentorBooking.Infrastructure.DTOs;
 
 namespace SwpMentorBooking.Infrastructure.Utils
 {
-    public class MIMEFileService
+    public class MIMEFileService : IMIMEFileService
     {
         public IConfiguration Configuration { get; }
-        private CloudinarySettings setting;
+        private CloudinarySettingsDTO setting;
         private Cloudinary cloudinary;
         private readonly ApplicationDbContext _context;
 
         public MIMEFileService(IConfiguration configuration, ApplicationDbContext context)
         {
             Configuration = configuration;
-            setting = Configuration.GetSection("CloudinarySettings").Get<CloudinarySettings>();
+            setting = Configuration.GetSection("CloudinarySettings").Get<CloudinarySettingsDTO>();
             Account acc = new Account(setting.CloudName, setting.ApiKey, setting.ApiSecret);
             cloudinary = new Cloudinary(acc);
             this._context = context;

@@ -1,0 +1,64 @@
+﻿@model SearchGroupMemberVM
+
+<div class="card bg-purple text-white mb-4">
+    <div class="card-body">
+        <h1 class="text-center mb-0">Search Students</h1>
+    </div>
+</div>
+
+<div class="card-body border p-4">
+    <form method="get" asp-action="AddMember">
+        <div class="mb-3">
+            <label asp-for="StudentCode" class="form-label">Student Code:</label>
+            <input asp-for="StudentCode" class="form-control" />
+            <span asp-validation-for="StudentCode" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+</div>
+
+@if (Model.SearchResults != null && Model.SearchResults.Any())
+{
+    <form method="post" asp-action="AddSelectedMembers">
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered shadow-sm">
+                <thead>
+                    <tr>
+                        <th>Select</th>
+                        <th>Full Name</th>
+                        <th>Student Code</th>
+                        <th>Email</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var student in Model.SearchResults)
+                    {
+                        <tr>
+                            <td class="align-middle">
+                                <input type="checkbox" name="memberIds" value="@student.UserId" />
+                            </td>
+
+                            <td class="align-middle">@student.FullName</td>
+                            <td class="align-middle">@student.StudentCode</td>
+                            <td class="align-middle">@student.Email</td>
+                            <td class="align-middle">
+                                <a asp-controller="" asp-action="Profile" asp-route-userId="@student.UserId">
+                                    View Profile
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <button type="submit" class="btn btn-success mt-3">Add to Group</button>
+    </form>
+}
+
+<style>
+    .bg-purple {
+        background-color: #6f42c1;
+    }
+</style>

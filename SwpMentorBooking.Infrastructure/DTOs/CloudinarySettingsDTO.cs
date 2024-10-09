@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SwpMentorBooking.Infrastructure.DTOs
 {
-    public class CloudinarySettings
+    public class CloudinarySettingsDTO
     {
         public string CloudName { get; set; }
         public string ApiKey { get; set; }

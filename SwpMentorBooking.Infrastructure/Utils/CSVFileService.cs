@@ -1,11 +1,12 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
+using SwpMentorBooking.Application.Common.Interfaces;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 
 namespace SwpMentorBooking.Infrastructure.Utils
 {
-    public class CSVFileService
+    public class CSVFileService : ICSVFileService
     {
         // First we need to only inject one service
         // ---

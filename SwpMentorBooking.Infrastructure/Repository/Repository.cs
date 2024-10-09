@@ -17,7 +17,21 @@ namespace SwpMentorBooking.Infrastructure.Repository
         }
         public T Get(Expression<Func<T, bool>> filter = null, string? includeProperties = null)
         {
-            throw new NotImplementedException();
+            IQueryable<T> query = dbSet;
+            if (filter is not null)
+            {   // Apply the filter to the query
+                query = query.Where(filter);
+            }
+            // includeProperties should be case-sensitive
+            if (!string.IsNullOrEmpty(includeProperties)) // includeProperties is not null or empty
+            {   // Split the string by comma and remove empty entries
+                foreach (var property in includeProperties
+                .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {   // Include the related entities
+                    query = query.Include(property);
+                }
+            }
+            return query.FirstOrDefault();
         }
         public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter = null, string? includeProperties = null)
         {
@@ -45,14 +59,8 @@ namespace SwpMentorBooking.Infrastructure.Repository
 
         public T Delete(T entity)
         {
-            throw new NotImplementedException();
+            dbSet.Remove(entity);
+            return entity;
         }
-
-        public T Update(T entity)
-        {
-            throw new NotImplementedException();
-        }
-
-
     }
 }

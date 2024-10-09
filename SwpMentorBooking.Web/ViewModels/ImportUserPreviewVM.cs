@@ -7,9 +7,10 @@ using System.ComponentModel.DataAnnotations;
 namespace SwpMentorBooking.Web.ViewModels
 {
     [Serializable]
-    public class ImportUserPreviewVM
+    public class ImportUserPreviewVM<T>
     {
 
-        public IEnumerable<(CSVStudentDTO Record, List<string> Errors)> Results { get; set; }
+        public IEnumerable<(T Record, List<string> Errors)> Results { get; set; }
+        public List<string> ImportErrors { get; set; } = new List<string>();
     }
 }

@@ -1,0 +1,49 @@
+﻿@model StudentGroupDetailVM
+
+<div class="card bg-purple text-white mb-4">
+    <div class="card-body">
+        <h1 class="text-center mb-0">Group Details</h1>
+    </div>
+</div>
+@if (Model.StudentGroup is null)
+{
+    <div class="card-body border p-4">
+        <h2>You are not in any group.</h2>
+        <span>Mind getting started with a group?</span>
+        <a asp-action="Create" asp-controller="StudentGroup">Create a group</a>
+    </div>
+}
+else
+{
+    <div class="card-body border p-4">
+        <div>
+            @if (Model.Student.IsLeader)
+            {
+                <a asp-action="AddMember" class="btn btn-info mx-3">Add new members</a>
+                <a asp-action="Edit" asp-route-groupId="@Model.StudentGroup.Id" class="btn btn-success mx-3">Edit group info</a>
+            }
+            <h2>Group Name: @Model.StudentGroup.GroupName</h2>
+            <p><strong>Topic:</strong> @Model.StudentGroup.Topic?.Name</p>
+            <p><strong>Wallet Balance:</strong> @Model.StudentGroup.Wallet.Balance</p>
+        </div>
+
+        <h3>Students in this Group:</h3>
+        <ul>
+            @foreach (var student in Model.GroupMembers)
+            {
+                <li>
+                    @student.User.FullName (@student.User.Email)
+                    @if (student.IsLeader)
+                    {
+                        <strong>(Leader)</strong>
+                    }
+                </li>
+            }
+        </ul>
+    </div>
+}
+<style>
+    .bg-purple {
+        background-color: #6f42c1;
+    }
+</style>

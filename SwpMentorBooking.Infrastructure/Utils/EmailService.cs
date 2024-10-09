@@ -1,10 +1,11 @@
 ﻿using Microsoft.Extensions.Configuration;
 using MimeKit;
 using MailKit.Net.Smtp;
+using SwpMentorBooking.Application.Common.Interfaces;
 
 namespace SwpMentorBooking.Infrastructure.Utils
 {
-    public class EmailService
+    public class EmailService : IEmailService
     {
         public IConfiguration Configuration { get; }
         private readonly string _smtpHostAddress;
@@ -18,6 +19,7 @@ namespace SwpMentorBooking.Infrastructure.Utils
             _senderName = Configuration.GetSection("EmailSettings").GetValue<string>("SenderName");
             _senderMailAddress = Configuration.GetSection("EmailSettings").GetValue<string>("SenderMailAddress");
             _smtpHostAddress = Configuration.GetSection("EmailSettings").GetValue<string>("SmtpHostAddress");
+            _appPassword = Configuration.GetSection("EmailSettings").GetValue<string>("AppPassword");
         }
 
         //public EmailService(string smtpHost, string sender)
@@ -25,7 +27,7 @@ namespace SwpMentorBooking.Infrastructure.Utils
         //    _smtpHost = smtpHost;
         //    _sender = sender;
         //}
-        public void sendEmail(string receiverMail, string subject, string message)
+        public void SendEmail(string receiverMail, string subject, string message)
         {
             var mail = new MimeMessage();
             mail.From.Add(new MailboxAddress(_senderName, _senderMailAddress));

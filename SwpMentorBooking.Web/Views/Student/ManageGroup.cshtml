@@ -1,0 +1,37 @@
+﻿@model StudentGroup
+
+<div class="card bg-purple text-white mb-4">
+    <div class="card-body">
+        <h1 class="text-center mb-0">Group Details</h1>
+    </div>
+</div>
+@if (Model is not null)
+{
+    <div class="card-body border p-4">
+        <h2>@Model.GroupName</h2>
+        <p><strong>Topic:</strong> @Model.Topic?.Name</p>
+        <p><strong>Wallet ID:</strong> @Model.WalletId</p>
+
+        <h3>Students in this Group:</h3>
+        <ul>
+            @foreach (var student in Model.StudentDetails)
+            {
+                <li>@student.User.FullName (@student.User.Email)</li>
+            }
+        </ul>
+    </div>
+}
+else
+{
+    <div class="card-body border p-4">
+        <h2>You are not in any group.</h2>
+        <span>Mind getting started with a group?</span>
+        <a asp-action="CreateGroup" asp-controller="StudentGroup">Create a group</a>
+    </div>
+}
+
+<style>
+    .bg-purple {
+        background-color: #6f42c1;
+    }
+</style>

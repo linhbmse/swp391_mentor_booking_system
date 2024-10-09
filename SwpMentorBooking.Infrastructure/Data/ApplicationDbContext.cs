@@ -168,7 +168,7 @@ public partial class ApplicationDbContext : DbContext
 
             entity.HasOne(d => d.User).WithOne(p => p.MentorDetail)
                 .HasForeignKey<MentorDetail>(d => d.UserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK__MentorDet__userI__1F63A897");
 
             entity.HasMany(d => d.Skills).WithMany(p => p.MentorDetails)
@@ -345,7 +345,7 @@ public partial class ApplicationDbContext : DbContext
 
             entity.HasOne(d => d.User).WithOne(p => p.StudentDetail)
                 .HasForeignKey<StudentDetail>(d => d.UserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK__StudentDe__userI__2334397B");
         });
 
@@ -373,7 +373,7 @@ public partial class ApplicationDbContext : DbContext
 
             entity.HasOne(d => d.Wallet).WithOne(p => p.StudentGroup)
                 .HasForeignKey<StudentGroup>(d => d.WalletId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK__StudentGr__walle__3DE82FB7");
         });
 

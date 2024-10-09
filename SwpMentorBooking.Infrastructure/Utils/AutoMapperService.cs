@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.Configuration;
 using CloudinaryDotNet.Actions;
+using SwpMentorBooking.Application.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SwpMentorBooking.Infrastructure.Utils
 {
-    public class AutoMapperService
+    public class AutoMapperService : IAutoMapperService
     {
         private readonly IMapper _mapper;
         public AutoMapperService(IMapper mapper)

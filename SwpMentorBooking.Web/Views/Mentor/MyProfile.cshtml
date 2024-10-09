@@ -1,0 +1,74 @@
+﻿@model MentorDetailVM
+
+<div class="card bg-purple text-white mb-4">
+    <div class="card-body">
+        <h1 class="text-center mb-0">Mentor Profile</h1>
+    </div>
+</div>
+
+<div class="card-body border p-4">
+    <div class="row">
+        <div class="col-md-8">
+            <dl class="row">
+                <dt class="col-sm-3">Email:</dt>
+                <dd class="col-sm-9">@Model.Email</dd>
+
+                <dt class="col-sm-3">Full Name:</dt>
+                <dd class="col-sm-9">@Model.FullName</dd>
+
+                <dt class="col-sm-3">Phone Number:</dt>
+                <dd class="col-sm-9">@Model.Phone</dd>
+
+                <dt class="col-sm-3">Gender:</dt>
+                <dd class="col-sm-9">@Model.Gender</dd>
+
+                <dt class="col-sm-3">Main Programming Language:</dt>
+                <ul>
+                    @foreach (var item in Model.MainProgrammingLanguage)
+                    {
+                        <li class="col-sm-9">@item</li>
+                    }
+                </ul>
+                <dt class="col-sm-3">Alternative Programming Language:</dt>
+                <ul>
+                    @foreach (var item in Model.AltProgrammingLanguage)
+                    {
+                        <li class="col-sm-9">@item</li>
+                    }
+                </ul>
+                <dt class="col-sm-3">Framework:</dt>
+                <ul>
+                    @foreach (var item in Model.Framework)
+                    {
+                        <li class="col-sm-9">@item</li>
+                    }
+                </ul>
+                <dt class="col-sm-3">Education:</dt>
+                <ul>
+                    @foreach (var item in Model.Education)
+                    {
+                        <li class="col-sm-9">@item</li>
+                    }
+                </ul>
+                <dt class="col-sm-3">Additional Contact Info:</dt>
+                <ul>
+                    @foreach (var item in Model.AdditionalContactInfo)
+                    {
+                        <li class="col-sm-9">@item</li>
+                    }
+                </ul>
+                <dt class="col-sm-3">Booking Score:</dt>
+                <dd class="col-sm-9">@Model.BookingScore</dd>
+
+                <dt class="col-sm-3">Description:</dt>
+                <dd class="col-sm-9">@Model.Description</dd>
+            </dl>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-purple {
+        background-color: #6f42c1;
+    }
+</style>

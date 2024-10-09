@@ -7,7 +7,7 @@ public partial class Wallet
 {
     public int Id { get; set; }
 
-    public int Balance { get; set; }
+    public int Balance { get; set; } = 200;
 
     public virtual StudentGroup? StudentGroup { get; set; }
 

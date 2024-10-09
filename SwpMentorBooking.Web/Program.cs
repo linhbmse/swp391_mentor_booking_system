@@ -1,3 +1,5 @@
+using Demo.Controllers;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using SwpMentorBooking.Application.Common.Interfaces;
 using SwpMentorBooking.Infrastructure.Configuration;
@@ -17,12 +19,25 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // Register UnitOfWork & FileService
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<CSVFileService>();
-builder.Services.AddScoped<AutoMapperService>();
-builder.Services.AddScoped<PasswordGeneratorService>();
-
+builder.Services.AddScoped<ICSVFileService, CSVFileService>();
+builder.Services.AddScoped<IAutoMapperService, AutoMapperService>();
+builder.Services.AddScoped<IPasswordGeneratorService, PasswordGeneratorService>();
+builder.Services.AddScoped<IMIMEFileService, MIMEFileService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IStringManipulationService, StringManipulationService>();
+builder.Services.AddScoped<IUtilService, UtilService>();
 // Add Auto-mapper
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
+//
+builder.Services.AddAuthentication(
+    CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(option =>
+    {
+        option.ExpireTimeSpan = TimeSpan.FromMinutes(10);
+        option.LoginPath = $"/Account/Login";
+        option.LogoutPath = $"/Account/Logout";
+        option.AccessDeniedPath = $"/Account/AccessDenied";
+    });
 
 
 // Configure Kestrel
@@ -47,10 +62,11 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Administrator}/{action=Index}/{id?}");
+    pattern: "{controller=Account}/{action=Login}/{id?}");
 
 app.Run();
