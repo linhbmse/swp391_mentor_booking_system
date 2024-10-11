@@ -13,9 +13,9 @@ namespace MentorScheduleCustom
             builder.Services.AddControllersWithViews();
 
             // Add the DbContext for Entity Framework Core, using a connection string from the configuration (appsettings.json)
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnectionStringDB");
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnectionStringDB"); // Make sure this matches your appsettings.json
             builder.Services.AddDbContext<SwpFall24Context>(options =>
-                options.UseSqlServer(connectionString)); // Make sure to adjust the connection string name and database provider
+                options.UseSqlServer(connectionString)); // Ensure the connection string and SQL provider are correct
 
             var app = builder.Build();
 
@@ -34,9 +34,10 @@ namespace MentorScheduleCustom
 
             app.UseAuthorization();
 
+            // Correct the route to match your controller methods
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Mentor}/{action=ScheduleByWeek}/{id?}");
+                pattern: "{controller=Mentor}/{action=SetSchedule}/{id?}"); // Set the correct action name
 
             app.Run();
         }

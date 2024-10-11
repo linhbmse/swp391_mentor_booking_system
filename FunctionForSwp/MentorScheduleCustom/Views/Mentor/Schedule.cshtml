@@ -1,0 +1,60 @@
+﻿@{
+@model MentorScheduleCustom.ViewModel.MentorScheduleWeekViewModel
+
+<h2>Schedule for Mentor ID: @Model.MentorDetailId</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Slot</th>
+            @for (var day = 0; day < 7; day++)
+            {
+                <th>@Model.WeekStartDate.AddDays(day).ToString("dddd dd/MM")</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @for (var slot = 1; slot <= 4; slot++) 
+        {
+            <tr>
+                <td>Slot @slot</td>
+                @for (var day = 0; day < 7; day++)
+                {
+                    var schedules = Model.DailySchedules.FirstOrDefault(ds => ds.Date == Model.WeekStartDate.AddDays(day))?.MentorSchedules;
+                    var currentSchedule = schedules?.FirstOrDefault(ms => ms.SlotId == slot);
+
+                    <td>
+                        @if (currentSchedule != null)
+                        {
+                            <div class="status-slot">
+                                <strong>@currentSchedule.SlotStartTime - @currentSchedule.SlotEndTime</strong> <br />
+
+                                @if (currentSchedule.Status == "available")
+                                {
+                                    <span class="badge bg-success">Available</span>
+                                }
+                                else if (currentSchedule.Status == "booked")
+                                {
+                                    <span class="badge bg-danger">Booked</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning">Unavailable</span>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <span class="text-muted">-</span>
+                        }
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a href="@Url.Action("Schedule", new { mentorId = 1, startDate = Model.WeekStartDate.AddDays(-7) })" class="btn btn-primary">Previous Week</a>
+<a href="@Url.Action("Schedule", new { mentorId = 1, startDate = Model.WeekStartDate.AddDays(7) })" class="btn btn-primary">Next Week</a>
+
+}
