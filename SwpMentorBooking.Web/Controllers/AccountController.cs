@@ -5,16 +5,26 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using SwpMentorBooking.Infrastructure.Data;
 using SwpMentorBooking.Web.ViewModels;
+using SwpMentorBooking.Application.Common.Interfaces;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 
 
 namespace Demo.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly ApplicationDbContext _dbContext;
-        public AccountController(ApplicationDbContext dbContext)
+        private readonly IUnitOfWork _unitOfWork;
+
+        public AccountController(IUnitOfWork unitOfWork)
         {
-            _dbContext = dbContext;
+            _unitOfWork = unitOfWork;
+        }
+
+        private enum Roles
+        {
+            Admin,
+            Student,
+            Mentor
         }
 
         [HttpGet]
@@ -33,12 +43,12 @@ namespace Demo.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = _dbContext.Users.Where(x => x.Email == model.UserEmail && x.Password == model.Password).FirstOrDefault();
-                if (user != null)
+                var user = _unitOfWork.User.Get(x => x.Email == model.UserEmail);
+                if (user != null && user.Password.Equals(model.Password))
                 {
                     if (user.IsActive == false)
                     {
-                        return RedirectToAction("Banned", "Account");
+                        return RedirectToAction(nameof(Banned));
                     }
                     else
                     {
@@ -55,6 +65,7 @@ namespace Demo.Controllers
                         {
                             AllowRefresh = true,
                             IsPersistent = model.RememberMe,
+                            ExpiresUtc = model.RememberMe ? DateTime.UtcNow.AddDays(7) : DateTime.UtcNow.AddMinutes(30),
                         };
 
                         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
@@ -62,13 +73,13 @@ namespace Demo.Controllers
 
                         if (user.IsFirstLogin)
                         {
-                            return RedirectToAction("ChangePassword", "Account");
+                            ViewData["Password"] = user.Password;
+                            return RedirectToAction(nameof(ChangePassword));
                         }
-                        return RedirectToAction("RedirectBasedOnRole");
-                        //return RedirectToAction("Index", "Home");                
+                        return RedirectToAction(nameof(RedirectBasedOnRole));
                     }
                 }
-                ViewData["ValidateMessage"] = "User not found.";
+                ViewData["ValidateMessage"] = "Username or password is invalid";
             }
             return View();
         }
@@ -79,20 +90,24 @@ namespace Demo.Controllers
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Login", "Account");
         }
-        
+
         [Authorize]
         public IActionResult RedirectBasedOnRole()
         {
             var userRole = HttpContext.User.FindFirst(ClaimTypes.Role).Value;
-            if ("admin".Equals(userRole))
+            if (userRole.Equals("Admin"))
             {
-                return RedirectToAction("Index", "Administrator");
+                return RedirectToAction("Index", "Admin");
             }
-            if ("mentor".Equals(userRole))
+            if (userRole.Equals("Mentor"))
             {
-                return RedirectToAction("Mentor", "Home");
+                return RedirectToAction("Index", "Mentor");
             }
-            return RedirectToAction("Index", "Home");
+            if (userRole.Equals("Student"))
+            {
+                return RedirectToAction("Index", "Student");
+            }
+            return RedirectToAction("Error", "Home");
         }
 
         [Authorize]
@@ -100,7 +115,7 @@ namespace Demo.Controllers
         public IActionResult ChangePassword()
         {
             var userEmail = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var user = _dbContext.Users.FirstOrDefault(x => x.Email == userEmail);
+            var user = _unitOfWork.User.Get(x => x.Email == userEmail);
             ViewBag.IsFirstLogin = user?.IsFirstLogin;
             return View();
         }
@@ -112,24 +127,32 @@ namespace Demo.Controllers
             if (ModelState.IsValid)
             {
                 var userEmail = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-                var user = _dbContext.Users.FirstOrDefault(x => x.Email == userEmail);
+                var user = _unitOfWork.User.Get(u => u.Email == userEmail);
+                ViewBag.IsFirstLogin = user?.IsFirstLogin;
                 if (user != null)
                 {
-                    if (model.CurrentPassword == user.Password)
+                    if (user.Password != model.NewPassword )
                     {
-                        if (user.IsFirstLogin)
+                        if (model.CurrentPassword == user.Password)
                         {
-                            user.IsFirstLogin = false;
+                            if (user.IsFirstLogin)
+                            {
+                                user.IsFirstLogin = false;
+                            }
+                            user.Password = model.NewPassword;
+                            _unitOfWork.Save();
+                            return RedirectToAction(nameof(RedirectBasedOnRole));
                         }
-                        user.Password = model.NewPassword;
-                        _dbContext.SaveChanges();
-                        return RedirectToAction("Index", "Home");
+                        else
+                        {
+                            ModelState.AddModelError("CurrentPassword", "Current password is incorrect.");
+                        }
                     }
                     else
                     {
-                        ModelState.AddModelError("CurrentPassword", "Current password is incorrect.");
+                        ModelState.AddModelError("NewPassword", "The new password must be different from the current password.");
                     }
-                }            
+                }
             }
             return View(model);
         }
@@ -141,6 +164,9 @@ namespace Demo.Controllers
             return View();
         }
 
-        
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
     }
 }

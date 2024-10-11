@@ -18,3 +18,4 @@ SwpMentorBooking.Infrastructure/Data/ApplicationDbContext.cs
 /SwpMentorBooking.Web/obj
 SwpMentorBooking.Web/SwpMentorBooking.Web.csproj.user
 SwpMentorBooking.sln
+/SwpMentorBooking.Web/wwwroot/lib

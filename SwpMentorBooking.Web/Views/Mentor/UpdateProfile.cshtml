@@ -1,0 +1,92 @@
+﻿@model MentorDetailVM
+
+<div class="card bg-purple text-white mb-4">
+    <div class="card-body">
+        <h1 class="text-center mb-0">Mentor Profile</h1>
+    </div>
+</div>
+
+<div class="card-body border p-4">
+    <form method="post" asp-action="UpdateProfile">
+        <!-- Adjust the action as needed -->
+        <input type="hidden" asp-for="UserId" />
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label">Email:</label>
+                    <input readonly asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="FullName" class="form-label">Full Name:</label>
+                    <input readonly asp-for="FullName" class="form-control" />
+                    <span asp-validation-for="FullName" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Phone" class="form-label">Phone Number:</label>
+                    <input readonly asp-for="Phone" class="form-control" />
+                    <span asp-validation-for="Phone" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Gender" class="form-label">Gender:</label>
+                    <input readonly asp-for="Gender" class="form-control" />
+                    <span asp-validation-for="Gender" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="MainProgrammingLanguage" class="form-label">Main Programming Language:</label>
+                    <input asp-for="MainProgrammingLanguage" class="form-control" />
+                    <span asp-validation-for="MainProgrammingLanguage" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="AltProgrammingLanguage" class="form-label">Alternative Programming Language:</label>
+                    <input asp-for="AltProgrammingLanguage" class="form-control" />
+                    <span asp-validation-for="AltProgrammingLanguage" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Framework" class="form-label">Framework:</label>
+                    <input asp-for="Framework" class="form-control" />
+                    <span asp-validation-for="Framework" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Education" class="form-label">Education:</label>
+                    <input asp-for="Education" class="form-control" />
+                    <span asp-validation-for="Education" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="AdditionalContactInfo" class="form-label">Additional Contact Info:</label>
+                    <input asp-for="AdditionalContactInfo" class="form-control" />
+                    <span asp-validation-for="AdditionalContactInfo" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="BookingScore" class="form-label">Booking Score:</label>
+                    <input readonly asp-for="BookingScore" class="form-control" />
+                    <span asp-validation-for="BookingScore" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Description" class="form-label">Description:</label>
+                    <textarea asp-for="Description" class="form-control"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Update Profile</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<style>
+    .bg-purple {
+        background-color: #6f42c1;
+    }
+</style>

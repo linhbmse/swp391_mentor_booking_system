@@ -1,0 +1,21 @@
+﻿body {
+    background-color: #e6f3ff;
+}
+
+.card {
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.progress-bar {
+    background-color: #007bff;
+}
+
+.list-group-item {
+    background-color: transparent;
+    border-color: rgba(0,0,0,0.125);
+}

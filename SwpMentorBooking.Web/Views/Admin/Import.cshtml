@@ -1,0 +1,98 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model ImportUserTypeVM
+<div class="card bg-purple text-white mb-4">
+    <div class="card-body">
+        <h1 class="text-center mb-0">Import User</h1>
+    </div>
+</div>
+<div class="col-6 col-md-3">
+    <a asp-controller="Admin" asp-action="Index" class="btn btn-secondary w-100">
+        <i class="bi bi-caret-left-fill white"></i> Main Page
+    </a>
+</div>
+<div class="card-body border p-4">
+    <form method="post" class="row" enctype="multipart/form-data">
+        <select asp-for="SelectedUserType" name="SelectedUserType" asp-items="@Model.UserType">
+            <option disabled selected>-- Select User Type --</option>
+        </select>
+        <div class="p-3">
+            <div class="form-floating py-2 col-12">
+                <input type="file" name="inputFile" asp-for="InputFile" />
+            </div>
+            <div class="row pt-2">
+                <div class="col-6 col-md-3">
+                    <button type="submit" class="btn btn-purple w-100">
+                        <i class="bi bi-plus-square-dotted"></i> Upload
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+
+
+
+<style>
+    /* From Uiverse.io by nikk7007 */
+    .switch {
+        --false: #00308F;
+        --true: #FF5733;
+    }
+
+    input[type=checkbox] {
+        appearance: none;
+        height: 2rem;
+        width: 8rem;
+        background-color: #fff;
+        position: relative;
+        border-radius: .2em;
+        cursor: pointer;
+    }
+
+        input[type=checkbox]::before {
+            text-align: center;
+            color: #fff;
+            font-weight: bold;
+            content: 'Mentor';
+            display: block;
+            height: 1.9em;
+            width: 4em;
+            transform: translate(-50%, -50%);
+            position: absolute;
+            top: 50%;
+            left: calc(1.9em/2 + .3em);
+            background-color: var(--false);
+            border-radius: .2em;
+            transition: .3s ease;
+        }
+
+        input[type=checkbox]:checked::before {
+            content: "Student";
+            background-color: var(--true);
+            left: calc(100% - (1.9em/2 + .3em));
+        }
+
+    /*=============================*/
+    .bg-purple {
+        background-color: #6f42c1;
+    }
+
+    .text-purple {
+        color: #6f42c1;
+    }
+
+    .btn-purple {
+        background-color: #6f42c1;
+        color: white;
+    }
+
+        .btn-purple:hover {
+            background-color: #5a32a3;
+            color: white;
+        }
+</style>
+
