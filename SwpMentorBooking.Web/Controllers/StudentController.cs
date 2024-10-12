@@ -58,6 +58,7 @@ namespace SwpMentorBooking.Web.Controllers
             return View(studentProfileVM);
         }
 
+        [HttpGet]
         public IActionResult MyGroup()
         {
             var userEmail = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -83,6 +84,40 @@ namespace SwpMentorBooking.Web.Controllers
             };
 
             return View(studentGroupDetailVM);
+        }
+
+       
+        public IActionResult UpdateProfile()
+        {
+            var userEmail = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = _unitOfWork.User.Get(u => u.Email == userEmail, includeProperties: nameof(StudentDetail));
+            var studentProfileVM = new StudentDetailVM
+            {
+                UserId = user.Id,
+                Email = user.Email,
+                FullName = user.FullName,
+                Phone = user.Phone,
+                Gender = user.Gender,
+                StudentCode = user.StudentDetail?.StudentCode
+            };
+            return View(studentProfileVM);
+        }
+
+        [HttpPost]
+        public IActionResult UpdateProfile(StudentDetailVM updatedModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var userEmail = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                var user = _unitOfWork.User.Get(u => u.Email == userEmail);
+                if (user != null)
+                {
+                    user.Phone = updatedModel.Phone;
+                    _unitOfWork.Save();
+                }
+                ViewData["ValidateMessage"] = "Update successful!";
+            }
+            return View();
         }
     }
 }

@@ -141,7 +141,7 @@ namespace Demo.Controllers
                             }
                             user.Password = model.NewPassword;
                             _unitOfWork.Save();
-                            return RedirectToAction(nameof(RedirectBasedOnRole));
+                            ViewData["ValidateMessage"] = "Change password successful!";
                         }
                         else
                         {

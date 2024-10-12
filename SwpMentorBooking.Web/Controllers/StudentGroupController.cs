@@ -179,7 +179,7 @@ namespace SwpMentorBooking.Web.Controllers
             }
 
             TempData["success"] = "Group member(s) added successfully.";
-            return RedirectToAction("MyGroup", nameof(StudentController));
+            return RedirectToAction("MyGroup", "Student"); 
         }
     }
 }
