@@ -7,56 +7,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Profile Page</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="~/css/profile.css" rel="stylesheet">
+    <link href="~/css/studentGroup.css" rel="stylesheet">
 </head>
 <body>
-    <div class="card bg-purple text-white mb-4">
-        <div class="card-body">
-            <h1 class="text-center mb-0">Group Details</h1>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h2 class="card-title">Group Name: @Model.StudentGroup.GroupName</h2>
+                        <h5 class="card-subtitle mb-2 text-muted">Topic: @Model.StudentGroup.Topic?.Name</h5>
+                        <p class="card-text"><strong>Wallet Points:</strong>  @Model.StudentGroup.Wallet.Balance</p>
+                        <h5 class="mt-4">Members:</h5>
+                        <ul class="member-list">
+                            @foreach (var student in Model.GroupMembers)
+                            {
+                                <li>                                 
+                                    @if (student.IsLeader)
+                                    {
+                                        <strong>@student.User.FullName (Leader)</strong>
+                                        <br>
+                                        <small>Student Code: @student.StudentCode | Email: @student.User.Email</small>
+                                    }else{
+                                        <strong>@student.User.FullName</strong>
+                                        <br>
+                                        <small>Student Code: @student.StudentCode | Email: @student.User.Email</small>
+                                    }
+                                </li>
+                            }
+                        </ul>
+                        @if (Model.Student.IsLeader)
+                        {
+                            <div class="mt-4">
+                                <button class="btn btn-primary me-2">
+                                    <a asp-action="AddMember" asp-controller="StudentGroup" class="text-dark">Add new members</a>
+                                </button>
+                                <button class="btn btn-primary me-2">
+                                    <a asp-action="Edit" asp-controller="StudentGroup" asp-route-groupId="@Model.StudentGroup.Id" class="text-dark">Edit group info</a>
+                                </button>
+                            </div>
+                        }                      
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    @if (Model is null)
-    {
-        <div class="card-body border p-4">
-            <h2>You are not in any group.</h2>
-            <span>Mind getting started with a group?</span>
-            <a asp-action="Create" asp-controller="StudentGroup">Create a group</a>
-        </div>
-    }
-    else
-    {
-        <div class="card-body border p-4">
-            <div>
-                @if (Model.Student.IsLeader)
-                {
-                    <a asp-action="AddMember" asp-controller="StudentGroup" class="btn btn-info mx-3">Add new members</a>
-                    <a asp-action="Edit" asp-controller="StudentGroup" asp-route-groupId="@Model.StudentGroup.Id" class="btn btn-success mx-3">Edit group info</a>
-                }
-                <h2>Group Name: @Model.StudentGroup.GroupName</h2>
-                <p><strong>Topic:</strong> @Model.StudentGroup.Topic?.Name</p>
-                <p><strong>Wallet Balance:</strong> @Model.StudentGroup.Wallet.Balance</p>
-            </div>
 
-            <h3>Students in this Group:</h3>
-            <ul>
-                @foreach (var student in Model.GroupMembers)
-                {
-                    <li>
-                        @student.User.FullName (@student.User.Email)
-                        @if (student.IsLeader)
-                        {
-                            <strong>(Leader)</strong>
-                        }
-                    </li>
-                }
-            </ul>
-        </div>
-    }
-    <style>
-        .bg-purple {
-            background-color: #6f42c1;
-        }
-    </style>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>

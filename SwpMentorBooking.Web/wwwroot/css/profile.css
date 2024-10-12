@@ -19,3 +19,7 @@
     background-color: transparent;
     border-color: rgba(0,0,0,0.125);
 }
+
+a {
+    text-decoration: none;
+}

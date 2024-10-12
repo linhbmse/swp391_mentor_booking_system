@@ -18,7 +18,7 @@ html {
 }
 
 body {
-    background-color: #e6f3ff;
+    background-color: #e6f3ff !important;
     margin-bottom: 60px;
 }
 
