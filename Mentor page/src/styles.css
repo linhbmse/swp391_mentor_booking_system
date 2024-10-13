@@ -1,0 +1,117 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f8ff;
+    padding-top: 56px; /* Add padding to body to account for fixed header */
+}
+
+.sidebar {
+    background-color: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    height: 100vh;
+    position: fixed;
+    top: 56px; /* Adjust sidebar top position */
+    padding-top: 20px; /* Add some top padding */
+}
+
+.sidebar h3 {
+    padding: 15px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.sidebar .nav-link {
+    color: #333;
+    font-size: 18px; /* Increase font size */
+    padding: 12px 20px; /* Increase padding */
+    transition: all 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.sidebar .nav-link:hover, 
+.sidebar .nav-link.active {
+    background-color: #e9ecef;
+    color: #007bff; /* Change color on hover/active */
+}
+
+.sidebar .nav-item {
+    margin-bottom: 10px; /* Add some space between items */
+}
+
+main {
+    padding-top: 20px;
+}
+
+.time-slot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.badge {
+    width: 100%;
+    padding: 5px;
+}
+
+.btn-sm {
+    width: 100%;
+    margin-top: 5px;
+}
+
+.table th {
+    background-color: #f8f9fa;
+}
+
+.table td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.dropdown-toggle::after {
+    display: none;
+}
+
+.dropdown-menu {
+    right: 0;
+    left: auto;
+}
+
+/* Thêm shadow cho header */
+.navbar.shadow {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Thêm shadow cho bảng */
+.table-responsive.shadow {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Điều chỉnh style cho bảng */
+.table {
+    margin-bottom: 0;
+}
+
+.table th:first-child,
+.table td:first-child {
+    border-left: none;
+}
+
+.table th:last-child,
+.table td:last-child {
+    border-right: none;
+}
+
+.table thead th {
+    border-top: none;
+}
+
+.table tbody tr:last-child td {
+    border-bottom: none;
+}

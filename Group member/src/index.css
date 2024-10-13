@@ -1,0 +1,264 @@
+body {
+    background-color: #e6f3ff;
+    padding-top: 70px;
+}
+
+.container-fluid {
+    background-color: #e6f3ff;
+}
+
+header {
+    background-color: #ffffff !important;
+}
+
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.dropdown-toggle::after {
+    display: none;
+}
+
+.dropdown-menu {
+    min-width: 8rem;
+}
+
+#contentArea img {
+    max-width: 100%;
+    height: auto;
+}
+
+#contentArea table {
+    margin-top: 1rem;
+}
+
+#contentArea table th,
+#contentArea table td {
+    padding: 0.75rem;
+    vertical-align: middle;
+    border-top: 1px solid #dee2e6;
+}
+
+#contentArea table thead th {
+    vertical-align: bottom;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.badge {
+    font-size: 0.8em;
+}
+
+.dropdown-item-text {
+    padding: 0.25rem 1rem;
+    color: #212529;
+    font-weight: bold;
+}
+
+.bg-primary.text-white {
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+}
+
+.bg-primary.text-white .card-title {
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+}
+
+.bg-primary.text-white .card-text {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.display-6 {
+    font-size: 2rem;
+}
+
+@media (min-width: 768px) {
+    .mt-md-0 {
+        margin-top: 0 !important;
+    }
+}
+
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.card-text {
+    font-size: 0.9rem;
+}
+
+#contentArea .row {
+    margin-bottom: 1rem;
+}
+
+#contentArea .col {
+    margin-bottom: 1rem;
+}
+
+.card-img-container {
+    height: 200px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-img-top {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+
+#mentorsList .card {
+    transition: transform 0.3s;
+}
+
+#mentorsList .card:hover {
+    transform: translateY(-5px);
+}
+
+.sidebar {
+    width: 250px;
+    position: fixed;
+    top: 70px;
+    left: 0;
+    bottom: 0;
+    z-index: 100;
+    padding: 48px 0 0;
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+}
+
+.sidebar .nav-link {
+    color: #333;
+    padding: 15px 20px;
+    border-radius: 0;
+    transition: all 0.3s;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+    color: #007bff;
+    background-color: #f8f9fa;
+}
+
+.sidebar .nav-link i {
+    margin-right: 15px;
+    font-size: 1.2em;
+    width: 20px;
+    text-align: center;
+}
+
+@media (max-width: 767.98px) {
+    .sidebar {
+        width: 100%;
+        position: relative;
+        top: 0;
+        padding-top: 0;
+    }
+    .sidebar .nav-link span {
+        display: inline;
+    }
+}
+
+main {
+    margin-left: 250px;
+}
+
+@media (min-width: 768px) {
+    main {
+        margin-left: 250px;
+    }
+}
+
+.list-group-item {
+    background-color: transparent;
+    border: none;
+    padding: 0.5rem 0;
+}
+
+.list-group-item:not(:last-child) {
+    border-bottom: 1px solid #dee2e6;
+}
+
+#createGroupForm .input-group {
+    margin-bottom: 10px;
+}
+
+#createGroupForm .btn-danger {
+    margin-left: 10px;
+}
+
+#addStudent {
+    margin-top: 10px;
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+.table th {
+    white-space: nowrap;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.modal-dialog {
+    max-width: 500px;
+}
+
+.modal-content {
+    border-radius: 0.5rem;
+}
+
+.modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.modal-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}
+
+#addMemberBtn {
+    margin-top: 1rem;
+}
+
+@media (max-width: 576px) {
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+
+    .btn-sm {
+        padding: 0.2rem 0.4rem;
+        font-size: 0.75rem;
+    }
+}
+
+.bg-primary.text-white {
+    display: inline-block;
+    padding: 0.3rem 0.5rem;
+    border-radius: 0.25rem;
+    font-weight: bold;
+}
+
+#groupScore {
+    font-size: 1.2rem;
+    margin: 0;
+}
