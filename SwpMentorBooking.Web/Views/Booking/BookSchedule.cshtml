@@ -1,0 +1,93 @@
+﻿@model BookingScheduleVM
+
+<div class="row">
+    <div class="col-md-8">
+        <h2>Schedule for mentor: @Model.MentorSchedule.MentorFullName</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Slot</th>
+                    @for (var day = 0; day < 7; day++)
+                    {
+                        <th>@Model.MentorSchedule.WeekStartDate.AddDays(day).ToString("ddd - dd/MM")</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var slot in Model.MentorSchedule.Slots)
+                {
+                    <tr>
+                        <td>
+                            Slot @slot.Id
+                            (@slot.StartTime.ToString(@"HH\:mm") - @slot.EndTime.ToString(@"HH\:mm"))
+                        </td>
+                        @for (var day = 0; day < 7; day++)
+                        {
+                            var schedules = Model.MentorSchedule.DailySchedules.FirstOrDefault(ds => ds.Date == Model.MentorSchedule.WeekStartDate.AddDays(day))?.MentorSchedules;
+                            var currentSchedule = schedules?.FirstOrDefault(ms => ms.SlotId == slot.Id);
+
+                            <td class="clickable-cell"
+                                data-schedule-id="@(currentSchedule?.Id ?? 0)"
+                                data-date="@Model.MentorSchedule.WeekStartDate.AddDays(day).ToString("yyyy-MM-dd")"
+                                data-slot="@slot.Id"
+                                data-start-time="@slot.StartTime"
+                                data-end-time="@slot.EndTime"
+                                data-status="@(currentSchedule?.Status ?? "unavailable")">
+                                @if (currentSchedule != null && currentSchedule.Status == "available")
+                                {
+                                    <span class="badge bg-success">Available</span>
+                                }
+                                else if (currentSchedule != null && currentSchedule.Status == "booked")
+                                {
+                                    <span class="badge bg-danger">Booked</span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">-</span>
+                                }
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <a asp-action="BookSchedule"
+           asp-route-mentorId="@Model.MentorSchedule.MentorId"
+           asp-route-startDate="@Model.MentorSchedule.WeekStartDate.AddDays(-7).ToString("yyyy-MM-dd")"
+           class="btn btn-primary">Previous Week</a>
+
+        <a asp-action="BookSchedule"
+           asp-route-mentorId="@Model.MentorSchedule.MentorId"
+           asp-route-startDate="@Model.MentorSchedule.WeekStartDate.AddDays(7).ToString("yyyy-MM-dd")"
+           class="btn btn-primary">Next Week</a>
+    </div>
+    <div class="col-md-4">
+        <div id="selectedSlotPreview" class="card" style="display: none;">
+            <div class="card-body">
+                <h5 class="card-title">Selected Slot</h5>
+                <p class="card-text" id="selectedSlotDate"></p>
+                <p class="card-text" id="selectedSlotTime"></p>
+                <p class="card-text" id="selectedSlotStatus"></p>
+                <a href="#" id="proceedToBooking" class="btn btn-success" style="display: none;">Proceed to Booking</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .clickable-cell {
+        cursor: pointer;
+    }
+
+        .clickable-cell:hover {
+            background-color: #f0f0f0;
+        }
+</style>
+
+@section Scripts {
+    <script>
+        var proceedToBookingUrl = '@Url.Action("BookScheduleDetails", "Booking")';
+    </script>
+    <script src="~/js/bookSchedule.js"></script>
+}

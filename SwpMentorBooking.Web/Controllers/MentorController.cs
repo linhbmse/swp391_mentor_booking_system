@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SwpMentorBooking.Application.Common.Interfaces;
 using SwpMentorBooking.Domain.Entities;
 using SwpMentorBooking.Web.ViewModels;
@@ -7,6 +8,8 @@ using System.Security.Claims;
 
 namespace SwpMentorBooking.Web.Controllers
 {
+    [Authorize(Roles = "Mentor")]
+    [Route("mentor")]
     public class MentorController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -17,11 +20,13 @@ namespace SwpMentorBooking.Web.Controllers
             _utilService = utilService;
         }
 
+        [HttpGet("home")]
         public IActionResult Index()
         {
             return View();
         }
-        [Authorize(Roles = "Mentor")]
+
+        [HttpGet("profile")]
         public IActionResult MyProfile()
         {
             var userEmail = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -30,11 +35,6 @@ namespace SwpMentorBooking.Web.Controllers
             if (user is null)
             {
                 return NotFound();
-            }
-            // Ensure the user is only accessing their own profile
-            if (user.Role != "Mentor")
-            {
-                return Forbid();
             }
             // At this point, the user does exist and it's our job to display the data correctly.
 
@@ -57,5 +57,163 @@ namespace SwpMentorBooking.Web.Controllers
 
             return View(mentorProfileVM);
         }
+
+        [HttpGet("schedule")]
+        public IActionResult ViewSchedule(DateTime? startDate)
+        {
+            var userEmail = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var mentor = _unitOfWork.Mentor.Get(m => m.User.Email == userEmail, includeProperties: nameof(User));
+
+            if (mentor is null)
+            {
+                return NotFound();
+            }
+
+
+            DateTime now = startDate ?? DateTime.Now;
+            DateOnly currentMonday = DateOnly.FromDateTime(now.AddDays(-(int)now.DayOfWeek + 1)); // Ensure Monday is first day
+            IEnumerable<Slot> slots = _unitOfWork.Slot.GetAll();
+            // Get the list of mentor schedule
+            IEnumerable<MentorSchedule> mentorSchedules = _unitOfWork.MentorSchedule
+                .GetAll(ms => ms.MentorDetailId == mentor.UserId && ms.Status != "unavailable", includeProperties: nameof(Slot))
+                .OrderBy(ms => ms.Date);
+            //var schedules = _unitOfWork.Mentor.MentorSchedules
+            //    .Include(ms => ms.Slot)
+            //    .Where(ms => ms.MentorDetailId == mentorId && ms.Status != "unavailable")
+            //    .OrderBy(ms => ms.Date)
+            //    .ToList();
+
+            // Map from MentorSchedule to MentorScheduleVM
+            var mentorScheduleVM = mentorSchedules.Select(s => new MentorScheduleVM
+            {
+                Id = s.Id,
+                MentorDetailId = s.MentorDetailId,
+                SlotId = s.SlotId,
+                Date = s.Date.ToDateTime(TimeOnly.MinValue),
+                Status = s.Status,
+                SlotStartTime = s.Slot.StartTime.ToString(@"HH\:mm"),
+                SlotEndTime = s.Slot.EndTime.ToString(@"HH\:mm")
+            }).ToList();
+
+            // Populate the mentorScheduleWeekVM for weekly display
+            var mentorScheduleWeekVM = new MentorScheduleWeekVM
+            {
+                MentorFullName = mentor.User.FullName,
+                WeekStartDate = currentMonday.ToDateTime(TimeOnly.MinValue),
+                Slots = slots.ToList(),
+                DailySchedules = Enumerable.Range(0, 7).Select(i => new DailySchedule
+                {
+                    Date = currentMonday.AddDays(i).ToDateTime(TimeOnly.MinValue),
+                    MentorSchedules = mentorScheduleVM
+                        .Where(s => s.Date.Date == currentMonday.AddDays(i).ToDateTime(TimeOnly.MinValue).Date)
+                        .ToList()
+                }).ToList()
+            };
+
+            return View(mentorScheduleWeekVM);
+        }
+
+        // Action for setting the schedule (all slots are shown, including unavailable)
+        [HttpGet("schedule/edit")]
+        public IActionResult SetSchedule(DateTime? startDate)
+        {
+            var userEmail = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var mentor = _unitOfWork.Mentor.Get(m => m.User.Email == userEmail, includeProperties: nameof(User));
+
+            if (mentor is null)
+            {
+                return NotFound();
+            }
+            // Get current date of click
+            DateTime now = startDate ?? DateTime.Now;
+            DateOnly currentMonday = DateOnly.FromDateTime(now.AddDays(-(int)now.DayOfWeek + 1)); // Ensure Monday is first day
+            IEnumerable<Slot> slots = _unitOfWork.Slot.GetAll();
+            // Get a list of the mentor's schedule
+            IEnumerable<MentorSchedule> mentorSchedules = _unitOfWork.MentorSchedule
+                .GetAll(ms => ms.MentorDetailId == mentor.UserId, includeProperties: nameof(Slot))
+                .OrderBy(ms => ms.Date);
+
+            // Populate the mentorScheduleVM
+            var mentorScheduleVM = mentorSchedules.Select(s => new MentorScheduleVM
+            {
+                Id = s.Id,
+                MentorDetailId = s.MentorDetailId,
+                SlotId = s.SlotId,
+                Date = s.Date.ToDateTime(TimeOnly.MinValue),
+                Status = s.Status,
+                SlotStartTime = s.Slot.StartTime.ToString(@"HH\:mm"),
+                SlotEndTime = s.Slot.EndTime.ToString(@"HH\:mm")
+            }).ToList();
+
+            // Populate the mentorScheduleWeekVM (for weekly display)
+            var mentorScheduleWeekVM = new MentorScheduleWeekVM
+            {
+                MentorFullName = mentor.User.FullName,
+                WeekStartDate = currentMonday.ToDateTime(TimeOnly.MinValue),
+                Slots = slots.ToList(),
+                DailySchedules = Enumerable.Range(0, 7).Select(i => new DailySchedule
+                {
+                    Date = currentMonday.AddDays(i).ToDateTime(TimeOnly.MinValue),
+                    MentorSchedules = mentorScheduleVM
+                        .Where(s => s.Date.Date == currentMonday.AddDays(i).ToDateTime(TimeOnly.MinValue).Date)
+                        .ToList(),
+                    IsPastDay = currentMonday.AddDays(i) < DateOnly.FromDateTime(DateTime.Now)
+                }).ToList()
+            };
+
+            return View(mentorScheduleWeekVM);
+        }
+
+        [HttpPost("schedule/toggle-availability")]
+        public IActionResult ToggleSlotAvailability(int mentorScheduleId, int slotId, DateOnly date)
+        {
+            var userEmail = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var mentor = _unitOfWork.Mentor.Get(m => m.User.Email == userEmail,
+                                                includeProperties: (nameof(User)));
+
+            if (mentor == null)
+            {
+                return NotFound();
+            }
+            // Get currently selected mentor schedule
+            var mentorSchedule = _unitOfWork.MentorSchedule.Get(ms => ms.Id == mentorScheduleId);
+
+            using (var transaction = _unitOfWork.BeginTransaction())
+            {
+                try
+                {
+                    if (mentorSchedule is null) // Schedule slot is not created yet
+                    {
+                        // Create a new MentorSchedule if it doesn't exist
+                        mentorSchedule = new MentorSchedule
+                        {
+                            MentorDetailId = mentor.UserId,
+                            SlotId = slotId,
+                            Date = date,
+                            Status = "available"
+                        };
+                        _unitOfWork.MentorSchedule.Add(mentorSchedule);
+                    }
+                    else
+                    {
+                        // Toggle the status
+                        mentorSchedule.Status = mentorSchedule.Status == "available" ? "unavailable" : "available";
+                        _unitOfWork.MentorSchedule.Update(mentorSchedule);
+                    }
+                    _unitOfWork.Save();
+                    transaction.Commit();
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    TempData["error"] = "An error has occurred. Please try again.";
+                    return RedirectToAction(nameof(SetSchedule), new { startDate = date.ToDateTime(TimeOnly.MinValue) });
+                }
+            }
+            // Toggle action is successful
+            TempData["success"] = "Schedule updated successfully.";
+            return RedirectToAction(nameof(SetSchedule), new { startDate = date.ToDateTime(TimeOnly.MinValue) });
+        }
+
     }
 }

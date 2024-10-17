@@ -15,6 +15,8 @@ public partial class Booking
 
     public string? Note { get; set; }
 
+    public string Status { get; set; } = null!;
+
     public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
 
     public virtual StudentDetail Leader { get; set; } = null!;

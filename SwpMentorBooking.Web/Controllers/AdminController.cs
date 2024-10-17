@@ -11,6 +11,7 @@ using SwpMentorBooking.Web.ViewModels;
 namespace SwpMentorBooking.Web.Controllers
 {
     [Authorize(Roles = "Admin")]
+    [Route("admin")]
     public class AdminController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -21,11 +22,12 @@ namespace SwpMentorBooking.Web.Controllers
             _utilService = utilService;
         }
 
+        [HttpGet("")]
         public IActionResult Index()
         {
             return View();
         }
-        [HttpGet]
+        [HttpGet("manage-users")]
         public IActionResult ManageUser()
         {
             // Get Student & Mentor lists
@@ -56,7 +58,7 @@ namespace SwpMentorBooking.Web.Controllers
             return View(importUserTypeVM);
         }
 
-        [HttpPost]
+        [HttpPost("import-users")]
         public IActionResult Import(ImportUserTypeVM userTypeVM)
         {
             // Get selected user type & CSV file input
@@ -130,7 +132,7 @@ namespace SwpMentorBooking.Web.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpGet("import-users/confirm")]
         public IActionResult ImportConfirm()
         {
             var importResult = TempData["ImportResult"] as string;
@@ -178,7 +180,7 @@ namespace SwpMentorBooking.Web.Controllers
             return View();
         }
 
-        [HttpPost]
+        [HttpPost("import-users/confirm")]
         public IActionResult ImportConfirm(string DTOJson, string SelectedUserType)
         {
             if (string.IsNullOrEmpty(DTOJson) || string.IsNullOrEmpty(SelectedUserType))
@@ -237,6 +239,7 @@ namespace SwpMentorBooking.Web.Controllers
             }
         }
 
+        [HttpGet("update/{userId}")]
         public IActionResult Update(int userId)
         {   // Retrieve user from Database
             User? userToUpdate = _unitOfWork.User.Get(u => u.Id == userId,
@@ -250,7 +253,7 @@ namespace SwpMentorBooking.Web.Controllers
             return View(userToUpdate);
         }
 
-        [HttpPost]
+        [HttpPost("update/{userId}")]
         public IActionResult Update(User user)
         {
             if (ModelState.IsValid)
@@ -294,6 +297,7 @@ namespace SwpMentorBooking.Web.Controllers
             return View();
         }
 
+        [HttpGet("delete/{userId}")]
         public IActionResult Delete(int userId)
         {
             User? userToDelete = _unitOfWork.User.Get(u => u.Id == userId,
@@ -307,7 +311,7 @@ namespace SwpMentorBooking.Web.Controllers
             return View(userToDelete);
         }
 
-        [HttpPost]
+        [HttpPost("delete/{userId}")]
         public IActionResult Delete(User user)
         {
             // Get the user to delete
@@ -335,11 +339,13 @@ namespace SwpMentorBooking.Web.Controllers
             return RedirectToAction(nameof(ManageUser));
         }
 
+        [HttpGet("import-confirm-student")]
         public IActionResult ImportConfirmStudent()
         {
             return View();
         }
 
+        [HttpGet("import-confirm-mentor")]
         public IActionResult ImportConfirmMentor()
         {
             return View();

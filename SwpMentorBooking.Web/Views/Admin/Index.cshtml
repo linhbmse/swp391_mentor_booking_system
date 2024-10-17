@@ -1,18 +1,21 @@
-﻿
+﻿@{
+    ViewData["Title"] = "Admin Dashboard";
+    Layout = "_AdminLayout";
+}
 
-<div class="card bg-purple text-white mb-4">
+<div class="card bg-purple text-white">
     <div class="card-body">
-        <h1 class="text-center mb-0">Admin Main Page</h1>
+        <h1 class="text-center">Admin Dashboard</h1>
     </div>
 </div>
 
-<div class="mb-3">
-    <a asp-controller="Admin" asp-action="ManageUser" class="btn btn-purple">
-        <i class="bi bi-plus-circle"></i><i class="fas fa-plus"></i> User Management
-    </a>
-</div>
+<!-- Add dashboard content here -->
 
-
+<style>
+    .bg-purple {
+        background-color: #6f42c1;
+    }
+</style>
 
 <style>
     .bg-purple {

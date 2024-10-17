@@ -12,11 +12,15 @@ namespace SwpMentorBooking.Application.Common.Interfaces
         IUserRepository User { get; }
         IStudentRepository Student { get; }
         IMentorRepository Mentor { get; }
+        IMentorScheduleRepository MentorSchedule { get; }
         IStudentGroupRepository StudentGroup { get; }
+        ISkillRepository Skill { get; }
+        ISlotRepository Slot { get; }
+        ISpecializationRepository Specialization { get; }
         ITopicRepository Topic { get; }
         IWalletRepository Wallet { get; }
         IDbContextTransaction BeginTransaction();
         void Save();
-        
+
     }
 }

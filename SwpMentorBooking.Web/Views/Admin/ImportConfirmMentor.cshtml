@@ -112,7 +112,7 @@
 </div>
 <div class="row pt-2">
     <div class="col-6 col-md-3">
-        <form asp-action="ImportConfirm" method="post">
+        <form asp-controller="Admin" asp-action="ImportConfirm" method="post">
             <input type="hidden" name="DTOJson" value='@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Results.Where(r => !r.Errors.Any()).Select(r => r.Record)))' />
             <input type="hidden" name="SelectedUserType" value="Mentor" />
             <button type="submit" class="btn btn-success w-100">Confirm Import</button>

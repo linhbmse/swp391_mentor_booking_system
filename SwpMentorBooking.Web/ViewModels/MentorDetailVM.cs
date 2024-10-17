@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SwpMentorBooking.Domain.Entities;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SwpMentorBooking.Web.ViewModels
@@ -16,6 +17,8 @@ namespace SwpMentorBooking.Web.ViewModels
         public string Gender {  get; set; }
         [NotMapped]
         public IFormFile? ProfilePhoto { get; set; }
+        public List<Skill>? Skills {  get; set; }
+        public List<Specialization>? Specializations { get; set; }
 
         [Display(Name = "Main Programming Language")]
         public List<string>? MainProgrammingLanguage { get; set; }
