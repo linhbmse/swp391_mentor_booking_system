@@ -16,5 +16,6 @@ namespace SwpMentorBooking.Web.ViewModels
         public DateTime Date { get; set; }
         public List<MentorScheduleVM> MentorSchedules { get; set; } // Update to MentorScheduleVM
         public bool IsPastDay { get; set; }
+        public bool IsPastSlot { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 
 <div class="row">
     <div class="col-md-8">
+        <a asp-controller="Student" asp-action="ViewMentorProfile" asp-route-mentorId="@Model.MentorSchedule.MentorId" class="btn btn-primary">Back to Mentor Profile</a>
         <h2>Schedule for mentor: @Model.MentorSchedule.MentorFullName</h2>
         <table class="table table-bordered">
             <thead>
@@ -26,14 +27,19 @@
                             var schedules = Model.MentorSchedule.DailySchedules.FirstOrDefault(ds => ds.Date == Model.MentorSchedule.WeekStartDate.AddDays(day))?.MentorSchedules;
                             var currentSchedule = schedules?.FirstOrDefault(ms => ms.SlotId == slot.Id);
 
+                            var currentDate = Model.MentorSchedule.WeekStartDate.AddDays(day);
+                            var isPastDay = Model.MentorSchedule.DailySchedules[day].IsPastDay;
+                            var isPastSlot = isPastDay || (currentDate.Date == DateTime.Today && DateTime.Now.TimeOfDay > slot.StartTime.ToTimeSpan());
+
                             <td class="clickable-cell"
                                 data-schedule-id="@(currentSchedule?.Id ?? 0)"
                                 data-date="@Model.MentorSchedule.WeekStartDate.AddDays(day).ToString("yyyy-MM-dd")"
                                 data-slot="@slot.Id"
                                 data-start-time="@slot.StartTime"
                                 data-end-time="@slot.EndTime"
-                                data-status="@(currentSchedule?.Status ?? "unavailable")">
-                                @if (currentSchedule != null && currentSchedule.Status == "available")
+                                data-status="@(currentSchedule?.Status ?? "unavailable")"
+                                data-is-past-slot="@(isPastSlot.ToString().ToLower())">
+                                @if (currentSchedule != null && currentSchedule.Status == "available" && !currentSchedule.IsPastSlot)
                                 {
                                     <span class="badge bg-success">Available</span>
                                 }
@@ -69,7 +75,10 @@
                 <p class="card-text" id="selectedSlotDate"></p>
                 <p class="card-text" id="selectedSlotTime"></p>
                 <p class="card-text" id="selectedSlotStatus"></p>
-                <a href="#" id="proceedToBooking" class="btn btn-success" style="display: none;">Proceed to Booking</a>
+                <a asp-controller="Booking" asp-action="ProceedToBooking"
+                   id="proceedToBooking" class="btn btn-success" style="display: none;">
+                    Proceed to Booking
+                </a>
             </div>
         </div>
     </div>
@@ -87,7 +96,7 @@
 
 @section Scripts {
     <script>
-        var proceedToBookingUrl = '@Url.Action("BookScheduleDetails", "Booking")';
+        var proceedToBookingUrl = '@Url.Action("ProceedToBooking", "Booking")';
     </script>
     <script src="~/js/bookSchedule.js"></script>
 }

@@ -1,0 +1,88 @@
+﻿@model BookingScheduleDetailsVM
+
+<h2>Booking Confirmation</h2>
+
+<form method="post">
+    <div class="row">
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Booking Details</h5>
+
+                    <input type="hidden" asp-for="GroupId" value="@Model.GroupId" />
+                    <input type="hidden" asp-for="LeaderId" value="@Model.LeaderId" />
+                    <input type="hidden" asp-for="MentorScheduleId" value="@Model.MentorScheduleId" />
+
+                    <div class="form-group mb-3">
+                        <label asp-for="GroupName">Group Name:</label>
+                        <input asp-for="GroupName" class="form-control" disabled />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="GroupTopic">Group Topic:</label>
+                        <input asp-for="GroupTopic" class="form-control" disabled />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="MentorName">Mentor Name:</label>
+                        <input asp-for="MentorName" class="form-control" disabled />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="ScheduleDate">Date:</label>
+                        <input type="text" asp-for="ScheduleDate" class="form-control" value="@Model.ScheduleDate.ToString("dddd, MMMM d, yyyy")" disabled />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="ScheduleTime">Time:</label>
+                        <input type="text" id="ScheduleTime" class="form-control" value="Slot @Model.SlotId (@Model.SlotStartTime.ToString("HH:mm") - @Model.SlotEndTime.ToString("HH:mm"))" disabled />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Note">Additional Notes:</label>
+                        <textarea readonly asp-for="Note" class="form-control" rows="3"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Booking Cost</h5>
+                    <table class="table">
+                        <tr>
+                            <td>Current wallet balance:</td>
+                            <td>@Model.WalletBalance</td>
+                        </tr>
+                        <tr>
+                            <td>Booking cost:</td>
+                            <td>@Model.BookingCost</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Balance after booking:</strong></td>
+                            <td><strong>@(Model.BalanceAfter)</strong></td>
+                        </tr>
+                        @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+                        {
+                            <tr>
+                                <td>
+                                    <p class="alert alert-danger">@ViewBag.ErrorMessage</p>
+                                </td>
+                            </tr>
+
+                        }
+                        <tr>
+                            <td>
+                                <a asp-action="BookSchedule" asp-route-mentorId="@Model.MentorId" class="btn btn-secondary mt-3">Back to Schedule</a>
+
+                                <button type="submit" class="btn btn-primary mt-3">Confirm Booking</button>
+                            </td>
+                        </tr>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

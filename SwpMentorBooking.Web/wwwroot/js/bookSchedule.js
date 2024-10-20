@@ -11,16 +11,18 @@ $(document).ready(function () {
         var endTime = $(this).data('end-time');
         var scheduleId = $(this).data('schedule-id');
         var status = $(this).data('status');
+        var isPastSlot = $(this).data('is-past-slot')
 
         $('#selectedSlotDate').text('Date: ' + formatDate(date));
         $('#selectedSlotTime').text('Time: ' + startTime + ' - ' + endTime);
         $('#selectedSlotStatus').text('Status: ' + status.charAt(0).toUpperCase() + status.slice(1));
 
-        if (status === 'available') {
-            $('#proceedToBooking').show().attr('href', '@Url.Action("ProceedToBooking", "Booking")?scheduleId=' + scheduleId);
+        if (status === 'available' && isPastSlot !== true) {
+            $('#proceedToBooking').show().attr('href', proceedToBookingUrl + '?scheduleId=' + scheduleId);
         } else {
             $('#proceedToBooking').hide();
         }
+
 
         $('#selectedSlotPreview').show();
     });
