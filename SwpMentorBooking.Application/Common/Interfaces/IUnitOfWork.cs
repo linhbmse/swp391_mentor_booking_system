@@ -19,6 +19,7 @@ namespace SwpMentorBooking.Application.Common.Interfaces
         ISpecializationRepository Specialization { get; }
         ITopicRepository Topic { get; }
         IWalletRepository Wallet { get; }
+        IBookingRepository Booking {  get; }
         IDbContextTransaction BeginTransaction();
         void Save();
 

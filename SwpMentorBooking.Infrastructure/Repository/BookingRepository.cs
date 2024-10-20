@@ -9,15 +9,16 @@ using System.Threading.Tasks;
 
 namespace SwpMentorBooking.Infrastructure.Repository
 {
-    public class WalletRepository : Repository<Wallet>, IWalletRepository
+    public class BookingRepository : Repository<Booking>, IBookingRepository
     {
         private readonly ApplicationDbContext _context;
-        public WalletRepository(ApplicationDbContext context) : base(context)
+
+        public BookingRepository(ApplicationDbContext context) : base(context)
         {
             _context = context;
         }
 
-        public Wallet Update(Wallet entity)
+        public Booking Update(Booking entity)
         {
             _context.Update(entity);
             return entity;

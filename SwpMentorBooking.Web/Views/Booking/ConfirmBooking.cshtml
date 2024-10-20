@@ -2,7 +2,7 @@
 
 <h2>Booking Confirmation</h2>
 
-<form method="post">
+<form method="post" asp-action="FinalizeBooking">
     <div class="row">
 
         <div class="col-md-6">
@@ -75,8 +75,10 @@
                         <tr>
                             <td>
                                 <a asp-action="BookSchedule" asp-route-mentorId="@Model.MentorId" class="btn btn-secondary mt-3">Back to Schedule</a>
-
-                                <button type="submit" class="btn btn-primary mt-3">Confirm Booking</button>
+                                @if (Model.BalanceAfter > 0)
+                                {
+                                    <button type="submit" class="btn btn-primary mt-3">Confirm Booking</button>
+                                }
                             </td>
                         </tr>
                     </table>

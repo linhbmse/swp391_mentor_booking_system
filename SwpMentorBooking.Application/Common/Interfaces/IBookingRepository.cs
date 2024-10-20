@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace SwpMentorBooking.Application.Common.Interfaces
 {
-    public interface IWalletRepository : IRepository<Wallet>
+    public interface IBookingRepository : IRepository<Booking>
     {
-        Wallet Update(Wallet entity);
+        Booking Update(Booking entity);
     }
 }

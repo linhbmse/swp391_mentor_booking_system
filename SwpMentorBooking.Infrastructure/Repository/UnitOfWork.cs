@@ -23,6 +23,7 @@ namespace SwpMentorBooking.Infrastructure.Repository
         public ISpecializationRepository Specialization { get; private set; }
         public ITopicRepository Topic { get; private set; }
         public IWalletRepository Wallet { get; private set; }
+        public IBookingRepository Booking { get; private set; }
         public UnitOfWork(ApplicationDbContext context)
         {
             _context = context;
@@ -36,6 +37,7 @@ namespace SwpMentorBooking.Infrastructure.Repository
             Specialization = new SpecializationRepository(_context);
             Topic = new TopicRepository(_context);
             Wallet = new WalletRepository(_context);
+            Booking = new BookingRepository(_context);
         }
 
 

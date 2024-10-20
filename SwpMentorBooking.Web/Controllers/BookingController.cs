@@ -13,7 +13,7 @@ namespace SwpMentorBooking.Web.Controllers
     {
 
         private readonly IUnitOfWork _unitOfWork;
-
+        private const int _bookingCost = 10;
         public BookingController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -180,18 +180,142 @@ namespace SwpMentorBooking.Web.Controllers
         }
 
         [HttpPost("finalize")]
-        public IActionResult FinalizeBooking(BookingScheduleDetailsVM bookingDetails)
+        // Finalize booking => Create a new Booking to the database
+        public IActionResult FinalizeBooking(BookingScheduleDetailsVM bookingDetailsVM)
         {
-            if (bookingDetails == null)
+            if (bookingDetailsVM is null || !ModelState.IsValid)
+            {
+                TempData["error"] = "An error has occurred processing booking details. Please try again.";
+                return RedirectToAction(nameof(ConfirmBooking), bookingDetailsVM);
+            }
+            // Double-check the wallet balance
+            if (bookingDetailsVM.BalanceAfter <= 0)
+            {
+                TempData["ErrorMessage"] = "Insufficient balance to proceed with booking.";
+                return RedirectToAction(nameof(ConfirmBooking), bookingDetailsVM);
+            }
+            // Retrieve necessary information for updates
+            Wallet wallet = _unitOfWork.Wallet.Get(w => w.StudentGroup.Id == bookingDetailsVM.GroupId);
+            MentorSchedule mentorSchedule = _unitOfWork.MentorSchedule.Get(ms => ms.Id == bookingDetailsVM.MentorScheduleId);
+
+            if (wallet is null || mentorSchedule is null)
+            {   // Display error
+                TempData["error"] = "An error has occurred processing booking details. Please try again.";
+                return RedirectToAction(nameof(BookSchedule), bookingDetailsVM.MentorId);
+            }
+            // Implement the logic to create the booking in the database
+            Booking booking = new Booking
+            {
+                LeaderId = bookingDetailsVM.LeaderId,
+                MentorScheduleId = bookingDetailsVM.MentorScheduleId,
+                Timestamp = DateTime.Now,
+                Note = bookingDetailsVM.Note,
+                Status = "pending"
+            };
+            // Initiate transaction
+            using (var transaction = _unitOfWork.BeginTransaction())
+            {
+                try
+                {
+                    _unitOfWork.Booking.Add(booking);
+
+                    // Update the wallet balance
+                    wallet.Balance = (wallet.Balance - _bookingCost);
+                    _unitOfWork.Wallet.Update(wallet);
+
+                    // Update the mentor schedule status
+                    mentorSchedule.Status = "booked";
+                    _unitOfWork.MentorSchedule.Update(mentorSchedule);
+                    // Save changes
+                    _unitOfWork.Save();
+                    transaction.Commit();
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    TempData["error"] = "An error has occurred processing booking details. Please try again.";
+                    return RedirectToAction(nameof(BookSchedule), bookingDetailsVM.MentorId);
+                }
+            }
+            TempData["SuccessMessage"] = "Booking confirmed successfully!";
+            return RedirectToAction(nameof(BookingSuccess), new { bookingId = booking.Id });
+        }
+
+        [HttpGet("success")]
+        public IActionResult BookingSuccess(int bookingId)
+        {
+            // Retrieve the booked schedule info
+            Booking booking = _unitOfWork.Booking.Get(b => b.Id == bookingId,
+                includeProperties: "MentorSchedule.MentorDetail.User,MentorSchedule.Slot,Leader.User,Leader.Group");
+
+            if (booking is null)
             {
                 return NotFound();
             }
 
-            // TODO: Implement the logic to create the booking in the database
-            // For now, we'll just redirect back to the schedule
+            var bookingSuccessVM = new BookingSuccessVM
+            {
+                BookingId = booking.Id,
+                GroupName = booking.Leader.Group.GroupName,
+                MentorName = booking.MentorSchedule.MentorDetail.User.FullName,
+                ScheduleDate = booking.MentorSchedule.Date.ToDateTime(TimeOnly.MinValue),
+                SlotId = booking.MentorSchedule.SlotId,
+                SlotStartTime = booking.MentorSchedule.Slot.StartTime,
+                SlotEndTime = booking.MentorSchedule.Slot.EndTime,
+                Note = booking.Note,
+                BookingCost = _bookingCost,
+                Timestamp = booking.Timestamp,
 
-            TempData["SuccessMessage"] = "Booking confirmed successfully!";
-            return RedirectToAction(nameof(BookSchedule), new { mentorId = bookingDetails.MentorId });
+                GroupId = booking.Leader.GroupId,
+                MentorId = booking.MentorSchedule.MentorDetail.UserId
+            };
+
+            return View(bookingSuccessVM);
+        }
+
+        [HttpGet("view-all")]
+        [AllowAnonymous]
+        public IActionResult ViewBookings()
+        {
+            // Get Student and their group info
+
+            // The reason is we have to consider the case where a Student that does not belong to any group
+            // wants to view the bookings. We redirect that Student to the corresponding View.
+            var userEmail = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var student = _unitOfWork.Student.Get(u => u.User.Email == userEmail, includeProperties: nameof(User));
+
+            if (student is null)
+            {
+                return NotFound();
+            }
+            // Get the Student group info
+            StudentGroup studentGroup = _unitOfWork.StudentGroup.Get(g => g.Id == student.GroupId,
+                        includeProperties: $"StudentDetails.User");
+
+            if (studentGroup is null)
+            {
+                return View();
+            }
+
+            IEnumerable<Booking> bookings = _unitOfWork.Booking.GetAll(b => b.Leader.GroupId == studentGroup.Id,
+        includeProperties: "MentorSchedule.MentorDetail.User,MentorSchedule.Slot,Leader.User,Leader.Group"
+        ).OrderByDescending(b => b.Timestamp);
+
+            IEnumerable<ViewBookingVM> viewBookingsVM = bookings.Select(b => new ViewBookingVM
+            {
+                BookingId = b.Id,
+                GroupName = b.Leader.Group.GroupName,
+                MentorName = b.MentorSchedule.MentorDetail.User.FullName,
+                ScheduleDate = b.MentorSchedule.Date.ToDateTime(TimeOnly.MinValue),
+                SlotStartTime = b.MentorSchedule.Slot.StartTime,
+                SlotEndTime = b.MentorSchedule.Slot.EndTime,
+                Note = b.Note,
+                BookingCost = _bookingCost,
+                Timestamp = b.Timestamp,
+                Status = b.Status
+            }).ToList();
+
+            return View(viewBookingsVM);
         }
     }
 }
