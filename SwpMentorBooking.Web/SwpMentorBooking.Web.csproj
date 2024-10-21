@@ -19,8 +19,4 @@
     <ProjectReference Include="..\SwpMentorBooking.Infrastructure\SwpMentorBooking.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="SkillSpecialization\" />
-  </ItemGroup>
-
 </Project>

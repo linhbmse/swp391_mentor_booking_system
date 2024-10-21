@@ -1,0 +1,29 @@
+﻿@model BookingDetailVM
+
+<h2>Booking Details</h2>
+<a asp-action=@(User.FindFirst(ClaimTypes.Role)?.Value == "Student" ?
+   "ViewStudentBookings" : "ViewMentorBookings") class="btn btn-primary mt-3">
+    Back to Bookings
+</a>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Booking #@Model.BookingId</h5>
+        <p><strong>Group:</strong> @Model.GroupName</p>
+        <p><strong>Mentor:</strong> @Model.MentorName</p>
+        <p><strong>Date:</strong> @Model.ScheduleDate.ToString("dddd, MMMM d, yyyy")</p>
+        <p><strong>Time:</strong> @Model.SlotStartTime.ToString("HH:mm") - @Model.SlotEndTime.ToString("HH:mm")</p>
+        <p><strong>Note:</strong> @Model.Note</p>
+        <p><strong>Booking Cost:</strong> @Model.BookingCost</p>
+        <p><strong>Booking Time:</strong> @Model.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</p>
+        <p><strong>Status:</strong> @Model.Status</p>
+
+        @if (Model.IsApprovable)
+        {
+            <form asp-action="ConfirmBooking" asp-route-bookingId="@Model.BookingId" method="post">
+                <button type="submit" class="btn btn-success">Confirm Booking</button>
+            </form>
+        }
+    </div>
+</div>
+

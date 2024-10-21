@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 using SwpMentorBooking.Application.Common.Interfaces;
 using SwpMentorBooking.Domain.Entities;
 using SwpMentorBooking.Web.ViewModels;
+using SwpMentorBooking.Web.Helpers;
 using System.Security.Claims;
 
 namespace SwpMentorBooking.Web.Controllers
 {
-    [Authorize(Roles = "Student", Policy = "GroupLeaderOnly")]
+    [Authorize]
     [Route("booking")]
     public class BookingController : Controller
     {
@@ -19,8 +20,9 @@ namespace SwpMentorBooking.Web.Controllers
             _unitOfWork = unitOfWork;
         }
 
+        // -- Booking functionalities for Student's group leader -- //
 
-
+        [Authorize(Roles = "Student", Policy = "GroupLeaderOnly")]
         [HttpGet("{mentorId}/schedule")]
         public IActionResult BookSchedule(int mentorId, DateTime? startDate)
         {
@@ -80,6 +82,7 @@ namespace SwpMentorBooking.Web.Controllers
             return View(bookingScheduleVM);
         }
 
+        [Authorize(Roles = "Student", Policy = "GroupLeaderOnly")]
         [HttpGet("proceed")]
         public IActionResult ProceedToBooking(int scheduleId)
         {
@@ -117,6 +120,7 @@ namespace SwpMentorBooking.Web.Controllers
             return View(bookingDetailsVM);
         }
 
+        [Authorize(Roles = "Student", Policy = "GroupLeaderOnly")]
         [HttpPost("proceed")]
         public IActionResult ProceedToBooking(BookingScheduleDetailsVM bookingDetailsVM)
         {
@@ -164,6 +168,7 @@ namespace SwpMentorBooking.Web.Controllers
             return RedirectToAction(nameof(ConfirmBooking), confirmBookingVM);
         }
 
+        [Authorize(Roles = "Student", Policy = "GroupLeaderOnly")]
         [HttpGet("confirmation")]
         public IActionResult ConfirmBooking(BookingScheduleDetailsVM confirmBookingVM)
         {
@@ -179,6 +184,7 @@ namespace SwpMentorBooking.Web.Controllers
             return View(confirmBookingVM);
         }
 
+        [Authorize(Roles = "Student", Policy = "GroupLeaderOnly")]
         [HttpPost("finalize")]
         // Finalize booking => Create a new Booking to the database
         public IActionResult FinalizeBooking(BookingScheduleDetailsVM bookingDetailsVM)
@@ -241,7 +247,9 @@ namespace SwpMentorBooking.Web.Controllers
             return RedirectToAction(nameof(BookingSuccess), new { bookingId = booking.Id });
         }
 
+        [Authorize(Roles = "Student", Policy = "GroupLeaderOnly")]
         [HttpGet("success")]
+        // Indicates successful booking => Shows booked schedule's details (invoice)
         public IActionResult BookingSuccess(int bookingId)
         {
             // Retrieve the booked schedule info
@@ -273,49 +281,271 @@ namespace SwpMentorBooking.Web.Controllers
             return View(bookingSuccessVM);
         }
 
-        [HttpGet("view-all")]
-        [AllowAnonymous]
-        public IActionResult ViewBookings()
+        // End of booking functionalities for Student's group leader //
+        // --------------------------------------------------------- //
+        [Authorize(Roles = "Student")]
+        [HttpGet("all")]
+        public IActionResult ViewStudentBookings(string status, DateTime? startDate, DateTime? endDate, int page = 1)
         {
             // Get Student and their group info
-
-            // The reason is we have to consider the case where a Student that does not belong to any group
-            // wants to view the bookings. We redirect that Student to the corresponding View.
             var userEmail = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var student = _unitOfWork.Student.Get(u => u.User.Email == userEmail, includeProperties: nameof(User));
+            var student = _unitOfWork.Student.Get(u => u.User.Email == userEmail,
+                            includeProperties: nameof(User));
 
             if (student is null)
             {
                 return NotFound();
             }
-            // Get the Student group info
+
+            // Get the Student's group info
             StudentGroup studentGroup = _unitOfWork.StudentGroup.Get(g => g.Id == student.GroupId,
                         includeProperties: $"StudentDetails.User");
 
-            if (studentGroup is null)
+            if (studentGroup is null) // The student does not belong to any group
             {
                 return View();
             }
 
-            IEnumerable<Booking> bookings = _unitOfWork.Booking.GetAll(b => b.Leader.GroupId == studentGroup.Id,
-        includeProperties: "MentorSchedule.MentorDetail.User,MentorSchedule.Slot,Leader.User,Leader.Group"
-        ).OrderByDescending(b => b.Timestamp);
+            // Get the list of bookings made by the group leader
+            var query = _unitOfWork.Booking.GetAll(b => b.Leader.GroupId == studentGroup.Id,
+                includeProperties: "MentorSchedule.MentorDetail.User,MentorSchedule.Slot,Leader.User,Leader.Group");
 
-            IEnumerable<ViewBookingVM> viewBookingsVM = bookings.Select(b => new ViewBookingVM
+            // Apply filters
+            if (!string.IsNullOrEmpty(status))
+            {
+                query = query.Where(b => b.Status == status);
+            }
+
+            if (startDate.HasValue)
+            {
+                query = query.Where(b => b.MentorSchedule.Date >= DateOnly.FromDateTime(startDate.Value));
+            }
+
+            if (endDate.HasValue)
+            {
+                query = query.Where(b => b.MentorSchedule.Date <= DateOnly.FromDateTime(endDate.Value));
+            }
+
+            // Order the results
+            query = query.OrderByDescending(b => b.Timestamp);
+
+            // Pagination
+            int pageSize = 10;
+            int skip = (page - 1) * pageSize;
+            var bookings = query.Skip(skip).Take(pageSize).ToList();
+
+            // Populate the view model with necessary information
+            var bookingDetailsVM = bookings.Select(b => new BookingDetailVM
             {
                 BookingId = b.Id,
-                GroupName = b.Leader.Group.GroupName,
                 MentorName = b.MentorSchedule.MentorDetail.User.FullName,
                 ScheduleDate = b.MentorSchedule.Date.ToDateTime(TimeOnly.MinValue),
                 SlotStartTime = b.MentorSchedule.Slot.StartTime,
                 SlotEndTime = b.MentorSchedule.Slot.EndTime,
-                Note = b.Note,
-                BookingCost = _bookingCost,
                 Timestamp = b.Timestamp,
                 Status = b.Status
             }).ToList();
 
-            return View(viewBookingsVM);
+            var studentBookingsVM = new MentorBookingsVM
+            {
+                Bookings = bookingDetailsVM,
+                CurrentPage = page,
+                TotalPages = (int)Math.Ceiling(query.Count() / (double)pageSize),
+                Status = status,
+                StartDate = startDate,
+                EndDate = endDate
+            };
+
+            return View(studentBookingsVM);
+        }
+
+        /*
+        [Authorize(Roles = "Mentor")]
+        [HttpGet("bookings")]
+        public IActionResult ViewMentorBookings()
+        {
+            var userEmail = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var mentor = _unitOfWork.Mentor.Get(m => m.User.Email == userEmail, includeProperties: nameof(User));
+
+            if (mentor is null)
+            {
+                return NotFound();
+            }
+
+            // Get all bookings for this mentor
+            IEnumerable<Booking> bookings = _unitOfWork.Booking.GetAll(
+                b => b.MentorSchedule.MentorDetailId == mentor.UserId,
+                includeProperties: "MentorSchedule.Slot,Leader.User,Leader.Group"
+            ).OrderByDescending(b => b.Timestamp);
+
+            // Populate the view model with necessary information
+            IEnumerable<BookingDetailVM> bookingDetailsVM = bookings.Select(b => new BookingDetailVM
+            {
+                BookingId = b.Id,
+                GroupName = b.Leader.Group.GroupName,
+                ScheduleDate = b.MentorSchedule.Date.ToDateTime(TimeOnly.MinValue),
+                SlotId = b.MentorSchedule.SlotId,
+                SlotStartTime = b.MentorSchedule.Slot.StartTime,
+                SlotEndTime = b.MentorSchedule.Slot.EndTime,
+                Timestamp = b.Timestamp,
+                Status = b.Status,
+                Note = b.Note
+            }).ToList();
+
+            return View(bookingDetailsVM);
+        }
+        */
+
+        [Authorize(Roles = "Mentor")]
+        [HttpGet("bookings")]
+        public IActionResult ViewMentorBookings(string status, DateTime? startDate, DateTime? endDate, int page = 1, int pageSize = 10)
+        {
+            var userEmail = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var mentor = _unitOfWork.Mentor.Get(m => m.User.Email == userEmail, includeProperties: nameof(User));
+
+            if (mentor is null)
+            {
+                return NotFound();
+            }
+
+            // Get all bookings for this mentor
+            var bookingsQuery = _unitOfWork.Booking.GetAll(
+                b => b.MentorSchedule.MentorDetailId == mentor.UserId,
+                includeProperties: "MentorSchedule.Slot,Leader.User,Leader.Group"
+            );
+
+            // Apply filters
+            if (!string.IsNullOrEmpty(status))
+            {
+                bookingsQuery = bookingsQuery.Where(b => b.Status == status);
+            }
+
+            if (startDate.HasValue)
+            {
+                bookingsQuery = bookingsQuery.Where(b => b.MentorSchedule.Date >= DateOnly.FromDateTime(startDate.Value));
+            }
+
+            if (endDate.HasValue)
+            {
+                bookingsQuery = bookingsQuery.Where(b => b.MentorSchedule.Date <= DateOnly.FromDateTime(endDate.Value));
+            }
+
+            // Order by date
+            bookingsQuery = bookingsQuery.OrderByDescending(b => b.MentorSchedule.Date);
+
+            // Apply pagination
+            var totalItems = bookingsQuery.Count();
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            var bookings = bookingsQuery
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            // Populate the view model with necessary information
+            var bookingDetailsVM = bookings.Select(b => new BookingDetailVM
+            {
+                BookingId = b.Id,
+                GroupName = b.Leader.Group.GroupName,
+                ScheduleDate = b.MentorSchedule.Date.ToDateTime(TimeOnly.MinValue),
+                SlotId = b.MentorSchedule.SlotId,
+                SlotStartTime = b.MentorSchedule.Slot.StartTime,
+                SlotEndTime = b.MentorSchedule.Slot.EndTime,
+                Timestamp = b.Timestamp,
+                Status = b.Status,
+                IsPastBooking = BookingScheduleHelper.IsBookingInPast(b.MentorSchedule),
+                IsApprovable = BookingScheduleHelper.IsBookingApprovable(b),
+                Note = b.Note
+            }).ToList();
+
+            var mentorBookingsVM = new MentorBookingsVM
+            {
+                Bookings = bookingDetailsVM,
+                CurrentPage = page,
+                TotalPages = totalPages,
+                Status = status,
+                StartDate = startDate,
+                EndDate = endDate
+            };
+
+            return View(mentorBookingsVM);
+        }
+
+        [Authorize(Roles = "Admin, Mentor, Student")]
+        [HttpGet("detail/{bookingId}")]
+        // View booking detail based on bookingId
+        public IActionResult ViewBookingDetail(int bookingId)
+        {
+            // Retrieve the booking with all necessary related entities
+            Booking booking = _unitOfWork.Booking.Get(b => b.Id == bookingId,
+                includeProperties: "MentorSchedule.MentorDetail.User,MentorSchedule.Slot,Leader.User,Leader.Group");
+
+            if (booking is null)
+            {
+                return NotFound();
+            }
+
+            // Create a view model for the booking details
+            var bookingDetailVM = new BookingDetailVM
+            {
+                BookingId = booking.Id,
+                GroupName = booking.Leader.Group.GroupName,
+                MentorName = booking.MentorSchedule.MentorDetail.User.FullName,
+                ScheduleDate = booking.MentorSchedule.Date.ToDateTime(TimeOnly.MinValue),
+                SlotStartTime = booking.MentorSchedule.Slot.StartTime,
+                SlotEndTime = booking.MentorSchedule.Slot.EndTime,
+                Note = booking.Note,
+                BookingCost = _bookingCost,
+                Timestamp = booking.Timestamp,
+                Status = booking.Status,
+
+                IsPastBooking = BookingScheduleHelper.IsBookingInPast(booking.MentorSchedule),
+                IsApprovable = User.IsInRole("Mentor")
+                && BookingScheduleHelper.IsBookingApprovable(booking)
+            };
+
+            return View(bookingDetailVM);
+        }
+
+        [Authorize(Roles = "Mentor")]
+        [HttpPost("approve")]
+        // Confirm / Approve the booking to notify the student group
+        public IActionResult ApproveBooking(int bookingId)
+        {
+            // Get the booking info
+            Booking booking = _unitOfWork.Booking.Get(b => b.Id == bookingId,
+                includeProperties: $"Leader.Group,{nameof(MentorSchedule)}");
+
+            if (booking is null)
+            {
+                return NotFound();
+            }
+            // Handles the case that the booking is past current time
+            if (!BookingScheduleHelper.IsBookingApprovable(booking))
+            {
+                TempData["error"] = "This booking cannot be confirmed.";
+                return RedirectToAction(nameof(ViewMentorBookings));
+            }
+
+            using (var transaction = _unitOfWork.BeginTransaction())
+            {
+                try
+                {
+                    booking.Status = "confirmed";
+                    _unitOfWork.Booking.Update(booking);
+
+                    _unitOfWork.Save();
+                    transaction.Commit();
+                    TempData["success"] = "Booking confirmed successfully.";
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    TempData["error"] = "An error occurred while confirming the booking.";
+                }
+            }
+
+            return RedirectToAction(nameof(ViewMentorBookings));
         }
     }
 }

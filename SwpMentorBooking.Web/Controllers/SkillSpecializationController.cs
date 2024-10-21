@@ -7,7 +7,7 @@ using SwpMentorBooking.Web.ViewModels;
 namespace SwpMentorBooking.Web.Controllers
 {
     [Authorize(Roles = "Admin")]
-    [Route("admin/skill-and-spec")]
+    [Route("admin/skill-and-specs")]
     public class SkillSpecializationController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;

@@ -113,6 +113,34 @@ namespace SwpMentorBooking.Web.Controllers
             return View(mentorScheduleWeekVM);
         }
 
+        [HttpGet("schedule/details/{scheduleId}")]
+        public IActionResult ViewSchedulePreview(int scheduleId)
+        {
+            var mentorSchedule = _unitOfWork.MentorSchedule.Get(ms => ms.Id == scheduleId,
+                includeProperties: "Slot,MentorDetail.User");
+
+            if (mentorSchedule == null)
+            {
+                return NotFound();
+            }
+
+            Booking? booking = _unitOfWork.Booking.Get(b => b.MentorScheduleId == scheduleId,
+                               includeProperties: "Leader.Group.Topic");
+
+            var bookingDetailVM = new BookingDetailVM
+            {
+                ScheduleDate = mentorSchedule.Date.ToDateTime(TimeOnly.MinValue),
+                SlotStartTime = mentorSchedule.Slot.StartTime,
+                SlotEndTime = mentorSchedule.Slot.EndTime,
+                Status = mentorSchedule.Status,
+                GroupName = booking?.Leader?.Group?.GroupName,
+                TopicName = booking?.Leader.Group?.Topic?.Name,
+                Note = booking?.Note
+            };
+
+            return PartialView("_SchedulePreview", bookingDetailVM);
+        }
+
         // Action for setting the schedule (all slots are shown, including unavailable)
         [HttpGet("schedule/edit")]
         public IActionResult SetSchedule(DateTime? startDate)
