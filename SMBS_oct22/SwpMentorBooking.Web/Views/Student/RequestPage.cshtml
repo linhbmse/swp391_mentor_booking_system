@@ -1,0 +1,27 @@
+﻿@model IEnumerable<SwpMentorBooking.Domain.Entities.Request>
+
+<h2>My Requests</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Status</th>
+            <th>Timestamp</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var request in Model)
+        {
+                <tr>
+                    <td>@request.Title</td>
+                    <td>@request.Status</td>
+                    <td>@request.Timestamp.ToString("g")</td> <!-- Format date properly -->
+                    <td>
+                        <a href="@Url.Action("Details", new { id = request.Id })" class="btn btn-info">View Details</a>
+                    </td>
+                </tr>
+        }
+    </tbody>
+</table>
+<a href="@Url.Action("SendRequest")" class="btn btn-primary">Submit a New Request</a>

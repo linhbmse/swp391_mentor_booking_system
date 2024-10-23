@@ -1,0 +1,86 @@
+﻿@model MentorProfileVM
+
+<a asp-controller="Student" asp-action="ViewMentors" class="btn btn-info mt-2">Back</a>
+<div class="card bg-purple text-white mb-4">
+    <div class="card-body">
+        <h1 class="text-center mb-0">Mentor Profile</h1>
+    </div>
+</div>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    @* <img src="@(string.IsNullOrEmpty(Model.ProfilePhoto) ? "/images/default-profile.png" : Model.ProfilePhotoUrl)"
+                    class="rounded-circle img-fluid" style="width: 150px;" alt="Mentor Profile Photo"> *@
+                    <h3 class="my-3">@Model.FullName</h3>
+                    <p class="text-muted mb-1">Mentor</p>
+                    <p class="text-muted mb-4">Booking Score: @Model.BookingScore</p>
+
+                    @if (Model.IsStudentGroupLeader)
+                    {
+                        <a asp-controller="Booking" asp-action="BookSchedule" asp-route-mentorId="@Model.UserId" class="btn btn-primary">Book a Schedule</a>
+                    }
+                    <a asp-controller="Student" asp-action="ViewMentorSchedule" asp-route-mentorId="@Model.UserId" class="btn btn-primary">View Schedule</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">About Me</h5>
+                    <p class="card-text">@Model.Description</p>
+                </div>
+            </div>
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Skills</h5>
+                    <h5>Programming Languages & Frameworks</h5>
+                    <div>
+                        <h6>Programming Languages</h6>
+                        <p>Main:</p>
+                        <ul>
+                            @foreach (var lang in Model.MainProgrammingLanguage)
+                            {
+                                <li>@lang</li>
+                            }
+                        </ul>
+                        <p>Additional:</p>
+                        <ul>
+                            @foreach (var lang in Model.AltProgrammingLanguage)
+                            {
+                                <li>@lang</li>
+                            }
+                        </ul>
+                    </div>
+                    <div>
+                        <h6>Frameworks:</h6>
+                        <ul>
+                            @foreach (var framework in Model.Framework)
+                            {
+                                <li>@framework</li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Education</h5>
+                    <ul>
+                        @foreach (var edu in Model.Education)
+                        {
+                            <li>@edu</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .bg-purple {
+        background-color: #6f42c1;
+    }
+</style>

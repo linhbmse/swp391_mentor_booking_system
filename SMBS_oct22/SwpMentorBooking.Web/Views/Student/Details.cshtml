@@ -1,0 +1,20 @@
+﻿@{
+	@model SwpMentorBooking.Domain.Entities.Request
+
+	<h2>Request Details</h2>
+
+	<div>
+		<strong>Title:</strong> @Model.Title
+	</div>
+	<div>
+		<strong>Content:</strong> @Model.Content
+	</div>
+	<div>
+		<strong>Status:</strong> @Model.Status
+	</div>
+	<div>
+		<strong>Timestamp:</strong> @Model.Timestamp
+	</div>
+	<a href="@Url.Action("Index")" class="btn btn-secondary">Back to List</a>
+
+}

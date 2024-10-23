@@ -1,0 +1,115 @@
+﻿@model ManageSkillAndSpecsVM
+
+@{
+    ViewData["Title"] = "Manage Skills & Specializations";
+    Layout = "_AdminLayout";
+}
+
+<div class="card bg-purple text-white mb-4">
+    <div class="card-body">
+        <h1 class="text-center mb-0">Manage Skills & Specializations</h1>
+    </div>
+</div>
+
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="skills-tab" data-bs-toggle="tab" data-bs-target="#skills" type="button" role="tab" aria-controls="skills" aria-selected="true">Skills</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="specs-tab" data-bs-toggle="tab" data-bs-target="#specs" type="button" role="tab" aria-controls="specs" aria-selected="false">Specializations</button>
+    </li>
+</ul>
+
+<div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="skills" role="tabpanel" aria-labelledby="skills-tab">
+        <div class="row">
+            <div class="col-md-6">
+                <h2>Current Skills</h2>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var skill in Model.Skills)
+                        {
+                            <tr>
+                                <td>@skill.Name</td>
+                                <td>@skill.Description</td>
+                                <td>
+                                    <a asp-action="EditSkill" asp-route-id="@skill.Id" class="btn btn-primary btn-sm">Edit</a>
+                                    <a asp-action="DeleteSkill" asp-route-id="@skill.Id" class="btn btn-danger btn-sm">Delete</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-6">
+                <h2>Add New Skill</h2>
+                <form asp-action="AddSkill" method="post">
+                    <div class="form-group">
+                        <label asp-for="NewSkill.Name">Name</label>
+                        <input asp-for="NewSkill.Name" class="form-control" />
+                        <span asp-validation-for="NewSkill.Name" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="NewSkill.Description">Description</label>
+                        <input asp-for="NewSkill.Description" class="form-control" />
+                        <span asp-validation-for="NewSkill.Description" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Skill</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="specs" role="tabpanel" aria-labelledby="specs-tab">
+        <div class="row">
+            <div class="col-md-6">
+                <h2>Current Specializations</h2>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var spec in Model.Specs)
+                        {
+                            <tr>
+                                <td>@spec.Name</td>
+                                <td>@spec.Description</td>
+                                <td>
+                                    <a asp-action="EditSpec" asp-route-id="@spec.Id" class="btn btn-primary btn-sm">Edit</a>
+                                    <a asp-action="DeleteSpec" asp-route-id="@spec.Id" class="btn btn-danger btn-sm">Delete</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-6">
+                <h2>Add New Specialization</h2>
+                <form asp-action="AddSpec" method="post">
+                    <div class="form-group">
+                        <label asp-for="NewSpec.Name">Name</label>
+                        <input asp-for="NewSpec.Name" class="form-control" />
+                        <span asp-validation-for="NewSpec.Name" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="NewSpec.Description">Description</label>
+                        <input asp-for="NewSpec.Description" class="form-control" />
+                        <span asp-validation-for="NewSpec.Description" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Specialization</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+

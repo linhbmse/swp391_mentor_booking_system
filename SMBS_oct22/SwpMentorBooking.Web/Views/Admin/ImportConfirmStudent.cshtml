@@ -1,0 +1,77 @@
+﻿@model ImportUserPreviewVM<CSVStudentDTO>
+
+<div class="card bg-purple text-white mb-4">
+    <div class="card-body">
+        <h1 class="text-center mb-0">Student List Preview</h1>
+    </div>
+</div>
+<a asp-controller="Admin" asp-action="Import" class="btn btn-secondary">Back</a>
+@if (Model.ImportErrors != null && Model.ImportErrors.Any())
+{   // There has been import errors
+    <div class="alert alert-danger">
+        <h4>Import Errors:</h4>
+        <ul>
+            @foreach (var error in Model.ImportErrors)
+            {
+                <li>@error</li>
+            }
+        </ul>
+    </div>
+}
+@if (!Model.Results.Any())
+{
+    <h4 class="text-danger">No record is found from the list.</h4>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered shadow-sm">
+            <thead class="bg-purple text-white">
+                <tr>
+                    <th>Email</th>
+                    <th>Full Name</th>
+                    <th>Phone</th>
+                    <th>Gender</th>
+                    <th>Student Code</th>
+                    <th>Data Format Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Results)
+                {
+                    <tr>
+                        <td class="align-middle">@item.Record.Email</td>
+                        <td class="align-middle">@item.Record.FullName</td>
+                        <td class="align-middle">@item.Record.Phone</td>
+                        <td class="align-middle">@item.Record.Gender</td>
+                        <td class="align-middle">@item.Record.StudentCode</td>
+                        <td class="align-middle">
+                            @if (item.Errors.Any())
+                            {
+                                <ul>
+                                    @foreach (var error in item.Errors)
+                                    {
+                                        <li class="text-danger">@error</li>
+                                    }
+                                </ul>
+                            }
+                            else
+                            {
+                                <span class="text-success">Valid</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="row pt-2">
+        <div class="col-6 col-md-3">
+            <form asp-controller="Admin" asp-action="ImportConfirm" method="post">
+                <input type="hidden" name="DTOJson" value='@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Results.Where(r => !r.Errors.Any()).Select(r => r.Record)))' />
+                <input type="hidden" name="SelectedUserType" value="Student" />
+                <button type="submit" class="btn btn-success">Confirm Import</button>
+            </form>
+        </div>
+    </div>
+}

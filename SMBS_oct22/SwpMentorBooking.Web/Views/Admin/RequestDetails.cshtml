@@ -1,0 +1,22 @@
+﻿@{
+    @model SwpMentorBooking.Domain.Entities.Request
+
+    <h2>Request Details</h2>
+    <p><strong>Title:</strong> @Model.Title</p>
+    <p><strong>Content:</strong> @Model.Content</p>
+    <p><strong>Leader:</strong> @Model.Leader.User.FullName (@Model.Leader.User.Email)</p>
+    <p><strong>Status:</strong> @Model.Status</p>
+
+    <form asp-action="ProcessRequest" method="post">
+        <input type="hidden" name="id" value="@Model.Id" />
+
+        <div class="form-group">
+            <label for="slotCount">Slots to Add:</label>
+            <input type="number" name="slotCount" value="10" class="form-control" min="1" />
+        </div>
+
+        <button type="submit" name="action" value="approve" class="btn btn-success">Approve</button>
+        <button type="submit" name="action" value="reject" class="btn btn-danger">Reject</button>
+    </form>
+
+}

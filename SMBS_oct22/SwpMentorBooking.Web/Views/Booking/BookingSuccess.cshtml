@@ -1,0 +1,56 @@
+﻿@model BookingSuccessVM
+
+<h2>Booking confirmed successfully!</h2>
+
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header">
+                <h3>Booking Details</h3>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <tr>
+                        <th>Group Name:</th>
+                        <td>@Model.GroupName</td>
+                    </tr>
+                    <tr>
+                        <th>Mentor Name:</th>
+                        <td>@Model.MentorName</td>
+                    </tr>
+                    <tr>
+                        <th>Schedule Date:</th>
+                        <td>@Model.ScheduleDate.ToString("dddd, MMMM d, yyyy")</td>
+                    </tr>
+                    <tr>
+                        <th>Time:</th>
+                        <td>Slot @Model.SlotId (@Model.SlotStartTime.ToString("HH:mm") - @Model.SlotEndTime.ToString("HH:mm"))</td>
+                    </tr>
+                    <tr>
+                        <th>Note:</th>
+                        <td>@Model.Note</td>
+                    </tr>
+                    <tr>
+                        <th>Booking Cost:</th>
+                        <td>@Model.BookingCost</td>
+                    </tr>
+                    <tr>
+                        <th>Booking Time:</th>
+                        <td>@Model.Timestamp.ToString("dd-MM-yyyy HH:mm:ss")</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="card-footer">
+                <div class="d-flex justify-content-between">
+                    <div class="card-footer">
+                        <div class="d-flex justify-content-between">
+                            <a asp-controller="Student" asp-action="Index" class="btn btn-primary">Back to Home</a>
+                            <a asp-controller="Booking" asp-action="ViewBookings" asp-route-groupId="@Model.GroupId" class="btn btn-info">View Bookings</a>
+                            <a asp-controller="Booking" asp-action="BookSchedule" asp-route-mentorId="@Model.MentorId" class="btn btn-success">Continue Booking</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

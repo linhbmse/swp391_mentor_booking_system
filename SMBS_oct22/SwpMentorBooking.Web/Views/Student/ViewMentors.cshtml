@@ -1,0 +1,30 @@
+﻿@model IEnumerable<MentorDetail>
+
+
+<div class="card bg-purple text-white mb-4">
+    <div class="card-body">
+        <h1 class="text-center mb-0">Available Mentors</h1>
+    </div>
+</div>
+
+<div class="row">
+    @foreach (var mentor in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">@mentor.User.FullName</h5>
+                    <p>Score: @mentor.BookingScore</p>
+                    <!-- Add more mentor details here as needed -->
+                    <a asp-controller="Student" asp-action="ViewMentorProfile" asp-route-mentorId="@mentor.UserId" class="btn btn-primary mt-2">View Profile</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .bg-purple {
+        background-color: #6f42c1;
+    }
+</style>

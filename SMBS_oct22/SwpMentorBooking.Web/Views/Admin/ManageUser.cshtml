@@ -1,0 +1,164 @@
+﻿@* @model IEnumerable<User> *@
+
+@{
+    ViewData["Title"] = "Manage Users";
+    Layout = "_AdminLayout";
+}
+@model ManageUserVM
+
+<div class="card bg-purple text-white mb-4">
+    <div class="card-body">
+        <h1 class="text-center mb-0">User Management</h1>
+    </div>
+</div>
+
+<div class="mb-3">
+    <a asp-controller="Admin" asp-action="Import" class="btn btn-purple">
+        <i class="bi bi-plus-circle"></i><i class="fas fa-plus"></i> Import User from list
+    </a>
+</div>
+
+<div class="w-75 btn-group" role="group">
+    <a asp-controller="Admin" asp-action="SendEmail"
+       class="btn btn-success mx-3">
+        <i class="bi bi-pencil-square"></i>Send the email
+    </a>
+</div>
+<input type="text" id="searchInput" onkeyup="filterUser()" placeholder="Search for names...">
+<ul class="nav nav-tabs" id="userTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="students-tab" data-bs-toggle="tab" data-bs-target="#students" type="button" role="tab" aria-controls="students" aria-selected="true">Students</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="mentors-tab" data-bs-toggle="tab" data-bs-target="#mentors" type="button" role="tab" aria-controls="mentors" aria-selected="false">Mentors</button>
+    </li>
+</ul>
+
+<div class="tab-content" id="userTabContent">
+    <div class="tab-pane fade show active" id="students" role="tabpanel" aria-labelledby="students-tab">
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered shadow-sm" id="studentTable">
+                <thead class="bg-purple text-white">
+                    <tr>
+                        <th>Email</th>
+                        <th>Full Name</th>
+                        <th>Phone Number</th>
+                        <th>Gender</th>
+                        <th>Profile Photo</th>
+                        <th>Student Code</th>
+                        <th>Status</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Students)
+                    {
+                        <tr>
+                            <td class="align-middle">@item.Email</td>
+                            <td class="align-middle">@item.FullName</td>
+                            <td class="align-middle">@item.Phone</td>
+                            <td class="align-middle">@item.Gender</td>
+                            <td class="align-middle">@item.ProfilePhoto</td>
+                            <td class="align-middle">@item.StudentDetail.StudentCode</td>
+                            <td class="align-middle">@(item.IsActive ? "Active" : "Deactivated")</td>
+                            <td class="text-center">
+                                <div class="w-75 btn-group" role="group">
+                                    <a asp-controller="Admin" asp-action="Update" asp-route-userId="@item.Id"
+                                       class="btn btn-success mx-3">
+                                        <i class="bi bi-pencil-square"></i>Edit
+                                    </a>
+                                    <a asp-controller="Admin" asp-action="Delete" asp-route-userId="@item.Id"
+                                       class="btn btn-danger mx-3">
+                                        <i class="bi bi-trash-fill"></i>Delete
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="mentors" role="tabpanel" aria-labelledby="mentors-tab">
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered shadow-sm" id="mentorTable">
+                <thead class="bg-purple text-white">
+                    <tr>
+                        <th>Email</th>
+                        <th>Full Name</th>
+                        <th>Phone Number</th>
+                        <th>Gender</th>
+                        <th>Profile Photo</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Skills</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Mentors)
+                    {
+                        <tr>
+                            <td class="align-middle">@item.Email</td>
+                            <td class="align-middle">@item.FullName</td>
+                            <td class="align-middle">@item.Phone</td>
+                            <td class="align-middle">@item.Gender</td>
+                            <td class="align-middle">@item.ProfilePhoto</td>
+                            <td class="align-middle">@item.Role</td>
+                            <td class="align-middle">@(item.IsActive ? "Active" : "Deactivated")</td>
+                            <td class="align-middle">
+                                @if (item.MentorDetail.Skills.Any())
+                                {
+                                    <ul>
+                                        @foreach (var skill in item.MentorDetail.Skills)
+                                        {
+                                            <li>@skill</li>
+                                        }
+                                    </ul>
+                                }
+                                else
+                                {
+                                    <span>Not specified</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                <div class="w-75 btn-group" role="group">
+                                    <a asp-controller="Admin" asp-action="Update" asp-route-userId="@item.Id"
+                                       class="btn btn-success mx-3">
+                                        <i class="bi bi-pencil-square"></i>Edit
+                                    </a>
+                                    <a asp-controller="Admin" asp-action="Delete" asp-route-userId="@item.Id"
+                                       class="btn btn-danger mx-3">
+                                        <i class="bi bi-trash-fill"></i>Delete
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-purple {
+        background-color: #6f42c1;
+    }
+
+    .text-purple {
+        color: #6f42c1;
+    }
+
+    .btn-purple {
+        background-color: #6f42c1;
+        color: white;
+    }
+
+        .btn-purple:hover {
+            background-color: #5a32a3;
+            color: white;
+        }
+</style>
+
+<script src="~/js/manageUser.js"></script>
