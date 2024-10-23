@@ -2,46 +2,41 @@
 
 <h2>Manage Requests</h2>
 <table class="table">
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>Leader</th>
-            <th>Status</th>
-            <th>Timestamp</th>
-            <th>Slots to Add</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var request in Model)
-        {
-            <tr>
-                <td>@request.Title</td>
-                <td>@request.Leader.User.FullName (@request.Leader.User.Email)</td>
-                <td>@request.Status</td>
-                <td>@request.Timestamp.ToString("g")</td>
-                <td>
-                    <!-- Input field for number of slots -->
-                    <input type="number" name="slotCount" value="10" min="1" class="form-control" style="width:80px;" form="form-@request.Id" />
-                </td>
-                <td>
-                    <!-- Action buttons within a form -->
-                    <form asp-action="ProcessRequest" method="post" id="form-@request.Id" class="d-inline">
-                        <input type="hidden" name="id" value="@request.Id" />
-                        @if (request.Status == "pending")
-                        {
-                            <button type="submit" name="action" value="approve" class="btn btn-success btn-sm">Approve</button>
-                            <button type="submit" name="action" value="reject" class="btn btn-danger btn-sm">Reject</button>
-                        }
-                        else
-                        {
-                            <span>Processed</span>
-                        }
-                    </form>
-                    <!-- View Details button -->
-                    <a href="@Url.Action("RequestDetails", new { id = request.Id })" class="btn btn-info btn-sm">View Details</a>
-                </td>
-            </tr>
-        }
-    </tbody>
+	<thead>
+		<tr>
+			<th>Title</th>
+			<th>Leader</th>
+			<th>Status</th>
+			<th>Timestamp</th>
+			<th>Actions</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var request in Model)
+		{
+			<tr>
+				<form asp-action="ProcessRequest" method="post">
+				<td>
+						@request.Title
+					<input type="hidden" name="id" value="@request.Id" />
+				</td>
+				<td>@request.Leader.User.FullName (@request.Leader.User.Email)</td>
+				<td>@request.Status</td>
+				<td>@request.Timestamp.ToString("g")</td>
+				<td>
+						@if (request.Status == "pending")
+						{
+						<button type="submit" name="action" value="approve" class="btn btn-success btn-sm">Approve</button>
+						<button type="submit" name="action" value="reject" class="btn btn-danger btn-sm">Reject</button>
+						}
+						else
+						{
+						<span>Processed</span>
+						}
+					<a href="@Url.Action("RequestDetails", new { id = request.Id })" class="btn btn-info btn-sm">View Details</a>
+				</td>
+				</form>
+			</tr>
+		}
+	</tbody>
 </table>

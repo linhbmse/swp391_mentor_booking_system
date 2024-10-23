@@ -1,22 +1,35 @@
-﻿@{
-    @model SwpMentorBooking.Domain.Entities.Request
+﻿@model SwpMentorBooking.Web.ViewModels.RequestDetailsViewModel
 
-    <h2>Request Details</h2>
-    <p><strong>Title:</strong> @Model.Title</p>
-    <p><strong>Content:</strong> @Model.Content</p>
-    <p><strong>Leader:</strong> @Model.Leader.User.FullName (@Model.Leader.User.Email)</p>
-    <p><strong>Status:</strong> @Model.Status</p>
+<h2>Request Details</h2>
 
-    <form asp-action="ProcessRequest" method="post">
-        <input type="hidden" name="id" value="@Model.Id" />
+@if (Model?.Request != null)
+{
+    <div>
+        <h3>@Model.Request.Title</h3>
+        <p>Submitted by: @Model.Request.Leader?.User?.FullName (@Model.Request.Leader?.User?.Email)</p>
+        <p>Status: @Model.Request.Status</p>
+        <p>Submitted on: @Model.Request.Timestamp.ToString("g")</p>
 
-        <div class="form-group">
-            <label for="slotCount">Slots to Add:</label>
-            <input type="number" name="slotCount" value="10" class="form-control" min="1" />
-        </div>
-
-        <button type="submit" name="action" value="approve" class="btn btn-success">Approve</button>
-        <button type="submit" name="action" value="reject" class="btn btn-danger">Reject</button>
-    </form>
-
+        @if (Model.Request.Status == "pending")
+        {
+            <!-- Add Slots to Add input -->
+            <form method="post" asp-action="ProcessRequest">
+                <input type="hidden" name="id" value="@Model.Request.Id" />
+                <div class="form-group">
+                    <label for="slotCount">Slots to Add:</label>
+                    <input type="number" id="slotCount" name="slotCount" value="10" min="1" class="form-control" style="width:100px;" />
+                </div>
+                <button type="submit" name="action" value="approve" class="btn btn-success">Approve</button>
+                <button type="submit" name="action" value="reject" class="btn btn-danger">Reject</button>
+            </form>
+        }
+        else
+        {
+            <p>This request has already been processed.</p>
+        }
+    </div>
+}
+else
+{
+    <p>No request details available.</p>
 }

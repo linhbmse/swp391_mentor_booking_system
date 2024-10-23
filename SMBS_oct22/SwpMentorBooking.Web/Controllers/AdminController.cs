@@ -9,6 +9,8 @@ using SwpMentorBooking.Infrastructure.Data;
 using SwpMentorBooking.Infrastructure.DTOs.ImportedUser;
 using SwpMentorBooking.Infrastructure.Utils;
 using SwpMentorBooking.Web.ViewModels;
+using MyRequest = SwpMentorBooking.Domain.Entities.Request;
+
 
 namespace SwpMentorBooking.Web.Controllers
 {
@@ -130,7 +132,8 @@ namespace SwpMentorBooking.Web.Controllers
                     {
                         Results = validationResults
                     };
-                } else
+                }
+                else
                 {
                     throw new Exception();
                 }
@@ -545,25 +548,47 @@ namespace SwpMentorBooking.Web.Controllers
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction("ManageRequests");
+
+            return RedirectToAction("RequestDetails", new { id = request.Id });
         }
+
+
 
         // GET: View details of a specific request
         [HttpGet("request-details/{id}")]
         public IActionResult RequestDetails(int id)
         {
-            var request = _context.Requests
-                .Include(r => r.Leader)
-                .ThenInclude(l => l.User)
-                .FirstOrDefault(r => r.Id == id);
+            var request = _context.Set<MyRequest>().FirstOrDefault(r => r.Id == id);
 
             if (request == null)
             {
-                return NotFound();
+                return NotFound(); // Return a 404 page if the request is not found
             }
 
-            return View("~/Views/Admin/RequestDetails.cshtml", request);  // Ensure the path is correct
+            var viewModel = new RequestDetailsViewModel
+            {
+                Request = request,
+                Action = null
+            };
+
+            return View(viewModel);
         }
+
+
+
+        // Example of a status computation method (just an example, customize it based on your logic)
+        // Example of a status computation method (just an example, customize it based on your logic)
+        private string DetermineRequestStatus(MyRequest request)
+        {
+            // Your logic to determine status, for example:
+            if (request.Timestamp < DateTime.Now.AddDays(-1))
+            {
+                return "expired";
+            }
+            return "pending";
+        }
+
+
 
     }
 }
