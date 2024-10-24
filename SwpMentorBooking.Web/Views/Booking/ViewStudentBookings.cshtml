@@ -1,0 +1,74 @@
+﻿@model MentorBookingsVM
+
+<h2>Bookings</h2>
+
+<form asp-action="ViewStudentBookings" method="get" class="mb-4">
+    <div class="row">
+        <div class="col-md-3">
+            <label for="status">Status:</label>
+            <select name="status" id="status" class="form-control">
+                <option value="">All</option>
+                <option value="pending" selected="@(Model.Status == "pending")">Pending</option>
+                <option value="confirmed" selected="@(Model.Status == "confirmed")">Confirmed</option>
+                <option value="cancelled" selected="@(Model.Status == "cancelled")">Cancelled</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label for="startDate">Start Date:</label>
+            <input type="date" name="startDate" id="startDate" class="form-control" value="@Model.StartDate?.ToString("yyyy-MM-dd")">
+        </div>
+        <div class="col-md-3">
+            <label for="endDate">End Date:</label>
+            <input type="date" name="endDate" id="endDate" class="form-control" value="@Model.EndDate?.ToString("yyyy-MM-dd")">
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary">Filter</button>
+        </div>
+    </div>
+</form>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Mentor Name</th>
+            <th>Schedule Date</th>
+            <th>Schedule Time</th>
+            <th>Booking Date</th>
+            <th>Booking Time</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (int i = 0; i < Model.Bookings.Count; i++)
+        {
+            var booking = Model.Bookings[i];
+            <tr>
+                <td>@(i + 1)</td>
+                <td>@booking.MentorName</td>
+                <td>@booking.ScheduleDate.ToString("dddd, MMMM d, yyyy")</td>
+                <td>@booking.SlotStartTime.ToString("HH:mm") - @booking.SlotEndTime.ToString("HH:mm")</td>
+                <td>@booking.Timestamp.ToString("dd-MM-yyyy")</td>
+                <td>@booking.Timestamp.ToString("HH:mm")</td>
+                <td>@booking.Status</td>
+                <td>
+                    <a asp-action="ViewBookingDetail" asp-route-bookingId="@booking.BookingId" class="btn btn-primary btn-sm">View Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<nav aria-label="Page navigation">
+    <ul class="pagination">
+        @for (int i = 1; i <= Model.TotalPages; i++)
+        {
+            <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                <a class="page-link" href="@Url.Action("ViewStudentBookings", new { page = i, status = Model.Status, startDate = Model.StartDate, endDate = Model.EndDate })">@i</a>
+            </li>
+        }
+    </ul>
+</nav>
+
+<a asp-controller="Student" asp-action="Index" class="btn btn-secondary">Back to Home</a>

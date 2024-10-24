@@ -1,0 +1,17 @@
+﻿@model BookingDetailVM
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Schedule Details</h5>
+        <p><strong>Date:</strong> @Model.ScheduleDate.ToString("dddd, MMMM d, yyyy")</p>
+        <p><strong>Time:</strong> @Model.SlotStartTime.ToString("HH:mm") - @Model.SlotEndTime.ToString("HH:mm")</p>
+        <p><strong>Status:</strong> @(char.ToUpper(Model.Status[0]) + Model.Status.Substring(1))</p>
+        @if (Model.Status == "booked")
+        {
+            <h6>Booking Information</h6>
+            <p><strong>Group:</strong> @Model.GroupName</p>
+            <p><strong>Topic:</strong> @Model.TopicName</p>
+            <p><strong>Note:</strong> @Model.Note</p>
+        }
+    </div>
+</div>

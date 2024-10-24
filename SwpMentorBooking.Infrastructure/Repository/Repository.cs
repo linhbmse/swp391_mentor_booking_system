@@ -33,7 +33,7 @@ namespace SwpMentorBooking.Infrastructure.Repository
             }
             return query.FirstOrDefault();
         }
-        public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter = null, string? includeProperties = null)
+        public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter = null, Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null, string? includeProperties = null)
         {
             IQueryable<T> query = dbSet;
             if (filter is not null)
@@ -48,6 +48,10 @@ namespace SwpMentorBooking.Infrastructure.Repository
                 {   // Include the related entities
                     query = query.Include(property);
                 }
+            }
+            if (orderBy != null)
+            {
+                query = orderBy(query);
             }
             return query.ToList();
         }

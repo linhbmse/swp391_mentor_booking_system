@@ -1,0 +1,45 @@
+﻿@model BookingScheduleDetailsVM
+
+<h2>Booking Details</h2>
+
+<div class="card">
+    <div class="card-body">
+        <form asp-action="ProceedToBooking" method="post">
+            <input type="hidden" asp-for="GroupId" value="@Model.GroupId"/>
+            <input type="hidden" asp-for="LeaderId" value ="@Model.LeaderId"/>
+            <input type="hidden" asp-for="MentorScheduleId" value="@Model.MentorScheduleId"/>
+            <div class="form-group mb-3">
+                <label for="GroupName">Group Name:</label>
+                <input type="text" id="GroupName" class="form-control" value="@Model.GroupName" readonly />
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="GroupTopic">Group Topic:</label>
+                <input type="text" id="GroupTopic" class="form-control" value="@Model.GroupTopic" readonly />
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="MentorName">Mentor Name:</label>
+                <input type="text" id="MentorName" class="form-control" value="@Model.MentorName" readonly />
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="ScheduleDate">Date:</label>
+                <input type="text" id="ScheduleDate" class="form-control" value="@Model.ScheduleDate.ToString("dddd, MMMM d, yyyy")" readonly />
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="ScheduleTime">Time:</label>
+                <input type="text" id="ScheduleTime" class="form-control" value="Slot @Model.SlotId (@Model.SlotStartTime.ToString("HH:mm") - @Model.SlotEndTime.ToString("HH:mm"))" readonly />
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="Note">Additional Notes:</label>
+                <textarea id="Note" name="Note" class="form-control" rows="3"></textarea>
+            </div>
+            <a asp-action="BookSchedule" asp-route-mentorId="@Model.MentorId" class="btn btn-secondary mt-3">Back to Schedule</a>
+            <button type="submit" class="btn btn-primary mt-3">Confirm Booking</button>
+        </form>
+    </div>
+</div>
+

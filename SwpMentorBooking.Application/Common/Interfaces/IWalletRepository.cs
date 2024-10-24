@@ -9,5 +9,6 @@ namespace SwpMentorBooking.Application.Common.Interfaces
 {
     public interface IWalletRepository : IRepository<Wallet>
     {
+        Wallet Update(Wallet entity);
     }
 }

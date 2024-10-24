@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using SwpMentorBooking.Application.Common.Interfaces;
 using SwpMentorBooking.Infrastructure.Configuration;
 using SwpMentorBooking.Infrastructure.Data;
 using SwpMentorBooking.Infrastructure.Repository;
 using SwpMentorBooking.Infrastructure.Utils;
+using SwpMentorBooking.Web.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,8 +17,8 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Register UnitOfWork & FileService
 
+// Register services
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ICSVFileService, CSVFileService>();
 builder.Services.AddScoped<IAutoMapperService, AutoMapperService>();
@@ -25,24 +27,25 @@ builder.Services.AddScoped<IMIMEFileService, MIMEFileService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IStringManipulationService, StringManipulationService>();
 builder.Services.AddScoped<IUtilService, UtilService>();
+// Authorization Handlers
+builder.Services.AddScoped<IAuthorizationHandler, GroupLeaderHandler>();
 // Add Auto-mapper
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
-// Add Authentication
+//
 builder.Services.AddAuthentication(
     CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(option =>
     {
+        option.ExpireTimeSpan = TimeSpan.FromMinutes(10);
         option.LoginPath = $"/Account/Login";
         option.LogoutPath = $"/Account/Logout";
         option.AccessDeniedPath = $"/Account/AccessDenied";
-        option.ExpireTimeSpan = TimeSpan.FromMinutes(10);
     });
-// Add Authorization
+
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
-    options.AddPolicy("MentorPolicy", policy => policy.RequireRole("Mentor"));
-    options.AddPolicy("StudentPolicy", policy => policy.RequireRole("Student"));
+    options.AddPolicy("GroupLeaderOnly", policy =>
+    policy.Requirements.Add(new GroupLeaderRequirement()));
 });
 // Configure Kestrel
 builder.WebHost.ConfigureKestrel(serverOptions =>

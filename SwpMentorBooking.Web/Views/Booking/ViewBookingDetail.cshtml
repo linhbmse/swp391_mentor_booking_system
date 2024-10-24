@@ -1,0 +1,82 @@
+﻿@model BookingDetailVM
+
+<h2>Booking Details</h2>
+<a asp-action=@(User.FindFirst(ClaimTypes.Role)?.Value == "Student" ?
+   "ViewStudentBookings" : "ViewMentorBookings") class="btn btn-primary mt-3">
+    Back to Bookings
+</a>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Booking #@Model.BookingId</h5>
+        <p><strong>Group:</strong> @Model.GroupName</p>
+        <p><strong>Mentor:</strong> @Model.MentorName</p>
+        <p><strong>Date:</strong> @Model.ScheduleDate.ToString("dddd, MMMM d, yyyy")</p>
+        <p><strong>Time:</strong> @Model.SlotStartTime.ToString("HH:mm") - @Model.SlotEndTime.ToString("HH:mm")</p>
+        <p><strong>Note:</strong> @Model.Note</p>
+        <p><strong>Booking Cost:</strong> @Model.BookingCost</p>
+        <p><strong>Booking Time:</strong> @Model.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</p>
+        <p><strong>Status:</strong> @Model.Status</p>
+
+        @if (Model.IsApprovable)
+        {
+            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#confirmModal" data-booking-id="@Model.BookingId">
+                Confirm Booking
+            </button>
+        }
+        @if (Model.IsCompletable)
+        {
+            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#completeModal" data-booking-id="@Model.BookingId">
+                Meeting Complete
+            </button>
+        }
+    </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">Confirm Booking</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Do you want to confirm this booking?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="confirmForm" asp-controller="Booking" asp-action="ApproveBooking" method="post">
+                    <input hidden id="bookingIdInput" name="bookingId" value="" />
+                    <button type="submit" class="btn btn-success">Confirm</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Complete Meeting Modal -->
+<div class="modal fade" id="completeModal" tabindex="-1" aria-labelledby="completeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="completeModalLabel">Complete Meeting</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to mark this meeting as complete?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="completeForm" asp-controller="Booking" asp-action="CompleteBooking" method="post">
+                    <input hidden id="completeBookingIdInput" name="bookingId" value="" />
+                    <button type="submit" class="btn btn-primary">Complete Meeting</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/approveBooking.js"></script>
+}

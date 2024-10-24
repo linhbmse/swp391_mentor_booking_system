@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.IdentityModel.Tokens;
@@ -7,11 +6,11 @@ using SwpMentorBooking.Application.Common.Interfaces;
 using SwpMentorBooking.Domain.Entities;
 using SwpMentorBooking.Web.ViewModels;
 using System.Security.Claims;
-using System.Transactions;
 
 namespace SwpMentorBooking.Web.Controllers
 {
     [Authorize(Roles = "Student")]
+    [Route("student-group")]
     public class StudentGroupController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -19,23 +18,15 @@ namespace SwpMentorBooking.Web.Controllers
         {
             _unitOfWork = unitOfWork;
         }
-        // GET: StudentGroupController
+
+        [HttpGet("")]
         public IActionResult Index()
         {
             return View();
         }
-        /// <summary>
-        /// Student views his/ her group
-        /// </summary>
-        /// <returns>The group that the Student is currently in</returns>
 
-        // GET: StudentGroupController/Details/5
-        public IActionResult Details(int id)
-        {
-            return View();
-        }
-
-        // GET: StudentGroupController/Create
+        // GET: /student-group/create
+        [HttpGet("create")]
         public IActionResult Create()
         {
             StudentGroupVM studentGroupVM = new StudentGroupVM
@@ -49,8 +40,8 @@ namespace SwpMentorBooking.Web.Controllers
             return View(studentGroupVM);
         }
 
-        // POST: StudentGroupController/Create
-        [HttpPost]
+        // POST: /student-group/create
+        [HttpPost("create")]
         [ValidateAntiForgeryToken]
         public IActionResult Create(StudentGroupVM studentGroupVM)
         {
@@ -80,16 +71,19 @@ namespace SwpMentorBooking.Web.Controllers
 
                     transaction.Commit();
                 }
-                TempData["success"] = $"Group \"{studentGroupVM.StudentGroup.GroupName}\" created successfully.";
-                return RedirectToAction("MyGroup", nameof(StudentController));
+                TempData["ValidateMessage"] = $"Group \"{studentGroupVM.StudentGroup.GroupName}\" created successfully."; //success
+                return RedirectToAction(actionName: "MyGroup", controllerName: "Student");
             }
             catch (Exception ex)
             {   // Logging
-                TempData["error"] = "An error occurred when creating new group.";
-                return RedirectToAction("MyGroup", nameof(StudentController));
+                TempData["ValidateMessage"] = "An error occurred when creating new group."; //error
+                return RedirectToAction(actionName: "MyGroup", controllerName: "Student");
             }
         }
 
+        // GET: /student-group/add-member
+        [HttpGet("add-member")]
+        [Authorize(Policy = "GroupLeaderOnly")]
         public IActionResult AddMember()
         {
             var userEmail = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -104,7 +98,9 @@ namespace SwpMentorBooking.Web.Controllers
             return View(searchGroupMemberVM);
         }
 
-        [HttpGet]
+        // GET: /student-group/add-member/search
+        [HttpGet("add-member/search")]
+        [Authorize(Policy = "GroupLeaderOnly")]
         public IActionResult AddMember(SearchGroupMemberVM searchGroupMemberVM)
         {
 
@@ -131,7 +127,9 @@ namespace SwpMentorBooking.Web.Controllers
             return View(nameof(AddMember), searchGroupMemberVM);
         }
 
-        [HttpPost]
+        // POST: /student-group/add-selected-members
+        [HttpPost("add-selected-members")]
+        [Authorize(Policy = "GroupLeaderOnly")]
         public IActionResult AddSelectedMembers(List<int> memberIds)
         {
             if (memberIds.IsNullOrEmpty())
@@ -152,7 +150,7 @@ namespace SwpMentorBooking.Web.Controllers
             // Retrieved student(s) not found => Show error
             if (studentsToAdd.IsNullOrEmpty())
             {
-                TempData["error"] = "An error has occurred. Please try again.";
+                TempData["ValidateMessage"] = "An error has occurred. Please try again.";//error
                 return RedirectToAction(nameof(AddMember));
             }
             // Proceed to adding the students into the group
@@ -178,8 +176,8 @@ namespace SwpMentorBooking.Web.Controllers
                 }
             }
 
-            TempData["success"] = "Group member(s) added successfully.";
-            return RedirectToAction("MyGroup", "Student"); 
+            TempData["ValidateMessage"] = "Group member(s) added successfully."; //error
+            return RedirectToAction(actionName: "MyGroup", controllerName: "Student");
         }
     }
 }

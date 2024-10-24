@@ -1,9 +1,4 @@
-﻿body {
-    background-color: #e6f3ff;
-}
-
-
-.mentor-card {
+﻿.mentor-card {
     transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
     border: none;
     border-radius: 15px;
@@ -45,7 +40,9 @@
     transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
 }
 
-    .btn-primary:hover {
-        background-color: #0056b3;
-        border-color: #0056b3;
-    }
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+

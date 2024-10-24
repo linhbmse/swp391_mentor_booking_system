@@ -7,6 +7,6 @@ namespace SwpMentorBooking.Web.ViewModels
         public StudentDetail Student { get; set; }
         public StudentGroup? StudentGroup { get; set; }
 
-        public List<StudentDetail>? GroupMembers { get; set; }
+        public List<StudentDetail>? GroupMembers { get; set; } = new List<StudentDetail>();
     }
 }

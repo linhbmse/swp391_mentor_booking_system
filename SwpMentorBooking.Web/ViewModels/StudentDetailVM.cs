@@ -9,6 +9,8 @@ namespace SwpMentorBooking.Web.ViewModels
         public string Email { get; set; }
         public string FullName { get; set; }
         [Display(Name = "Phone Number")]
+        [RegularExpression(@"\d{10}",
+            ErrorMessage = "Phone Number must have 10 digits")]
         public string Phone { get; set; }
         public string Gender { get; set; }
         [NotMapped]

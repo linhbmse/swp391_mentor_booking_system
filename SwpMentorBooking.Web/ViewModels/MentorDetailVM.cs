@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SwpMentorBooking.Domain.Entities;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SwpMentorBooking.Web.ViewModels
@@ -12,7 +13,11 @@ namespace SwpMentorBooking.Web.ViewModels
         public string FullName { get; set; }
 
         [Display(Name = "Phone Number")]
+        [RegularExpression(@"^\d{10}$",
+        ErrorMessage = "Phone number must have exactly 10 digits")]
         public string Phone { get; set; }
+
+
         public string Gender {  get; set; }
         [NotMapped]
         public IFormFile? ProfilePhoto { get; set; }
@@ -33,5 +38,9 @@ namespace SwpMentorBooking.Web.ViewModels
         public int? BookingScore { get; set; }
 
         public string? Description { get; set; }
+
+        public List<Skill>? Skills { get; set; } = new List<Skill>();
+
+        public List<Specialization>? Specializations { get; set; } = new List<Specialization>();
     }
 }

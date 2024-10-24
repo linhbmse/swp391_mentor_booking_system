@@ -27,11 +27,11 @@ namespace SwpMentorBooking.Infrastructure.Utils
         //    _smtpHost = smtpHost;
         //    _sender = sender;
         //}
-        public void SendEmail(string receiverMail, string subject, string message)
+        public async Task SendEmail(string receiverMail, string subject, string message)
         {
             var mail = new MimeMessage();
             mail.From.Add(new MailboxAddress(_senderName, _senderMailAddress));
-            mail.To.Add(new MailboxAddress("MinkTry", receiverMail));
+            mail.To.Add(new MailboxAddress("", receiverMail));
 
             mail.Subject = subject;
 
@@ -40,14 +40,20 @@ namespace SwpMentorBooking.Infrastructure.Utils
                 Text = $"{message}"
             };
             // 
-            using (var client = new SmtpClient())
+            try
             {
-                client.Connect(_smtpHostAddress, 587, false);
-                client.Authenticate(_senderMailAddress, _appPassword);
-                client.Send(mail);
-                client.Disconnect(true);
+                using (var client = new SmtpClient())
+                {
+                    client.Connect(_smtpHostAddress, 587, false);
+                    client.Authenticate(_senderMailAddress, _appPassword);
+                    await client.SendAsync(mail);
+                    client.Disconnect(true);
+                }
             }
-
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Failed to send email.", ex);
+            }
         }
     }
 }

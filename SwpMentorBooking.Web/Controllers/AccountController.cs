@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using SwpMentorBooking.Infrastructure.Data;
 using SwpMentorBooking.Web.ViewModels;
 using SwpMentorBooking.Application.Common.Interfaces;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+using SwpMentorBooking.Domain.Entities;
 
 
 namespace Demo.Controllers
@@ -14,17 +14,17 @@ namespace Demo.Controllers
     public class AccountController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
-
-        public AccountController(IUnitOfWork unitOfWork)
-        {
-            _unitOfWork = unitOfWork;
-        }
-
+        private readonly IUtilService _utilService;
         private enum Roles
         {
             Admin,
             Student,
             Mentor
+        }
+        public AccountController(IUnitOfWork unitOfWork, IUtilService utilService)
+        {
+            _unitOfWork = unitOfWork;
+            _utilService = utilService;
         }
 
         [HttpGet]
@@ -33,7 +33,7 @@ namespace Demo.Controllers
             ClaimsPrincipal claimUser = HttpContext.User;
             if (claimUser.Identity.IsAuthenticated)
                 //return RedirectToAction("Index", "Home");
-                return RedirectToAction("RedirectBasedOnRole");
+                return RedirectToAction(nameof(RedirectBasedOnRole));
             return View();
         }
 
@@ -43,12 +43,12 @@ namespace Demo.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = _unitOfWork.User.Get(x => x.Email == model.UserEmail);
-                if (user != null && user.Password.Equals(model.Password))
+                var user = _unitOfWork.User.Get(x => x.Email.Equals(model.UserEmail));
+                if (user is not null && user.Password == model.Password)
                 {
-                    if (user.IsActive == false)
+                    if (!user.IsActive)
                     {
-                        return RedirectToAction(nameof(Banned));
+                        return RedirectToAction("Banned", "Account");
                     }
                     else
                     {
@@ -65,24 +65,32 @@ namespace Demo.Controllers
                         {
                             AllowRefresh = true,
                             IsPersistent = model.RememberMe,
-                            ExpiresUtc = model.RememberMe ? DateTime.UtcNow.AddDays(7) : DateTime.UtcNow.AddMinutes(30),
+                            ExpiresUtc = model.RememberMe ? DateTime.UtcNow.AddDays(3) : DateTime.UtcNow.AddMinutes(30),
                         };
 
                         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
                             new ClaimsPrincipal(claimsIdentity), properties);
 
-                        if (user.IsFirstLogin)
+                        if (user.Role != "Admin")
                         {
-                            ViewData["Password"] = user.Password;
-                            return RedirectToAction(nameof(ChangePassword));
+                            if (user.IsFirstLogin)
+                            {
+                                string subject = "Welcome to FU-NextExam!";
+                                string body = $"<h1>Hello,</h1><p>Welcome to Our Mentoring Web! We're excited to have you on board.</p>";
+                                await _utilService.Email.SendEmail(user.Email, subject, body);
+                                TempData["Password"] = user.Password;
+                                return RedirectToAction(nameof(ChangePassword));
+                            }
                         }
                         return RedirectToAction(nameof(RedirectBasedOnRole));
+                        //return RedirectToAction("Index", "Home");                
                     }
                 }
-                ViewData["ValidateMessage"] = "Username or password is invalid";
+                ViewData["ValidateMessage"] = "User not found.";
             }
             return View();
         }
+
         [Authorize]
         [HttpGet]
         public async Task<IActionResult> Logout()
@@ -95,11 +103,11 @@ namespace Demo.Controllers
         public IActionResult RedirectBasedOnRole()
         {
             var userRole = HttpContext.User.FindFirst(ClaimTypes.Role).Value;
-            if (userRole.Equals("Admin"))
+            if ("Admin".Equals(userRole))
             {
                 return RedirectToAction("Index", "Admin");
             }
-            if (userRole.Equals("Mentor"))
+            if ("Mentor".Equals(userRole))
             {
                 return RedirectToAction("Index", "Mentor");
             }
@@ -107,54 +115,82 @@ namespace Demo.Controllers
             {
                 return RedirectToAction("Index", "Student");
             }
-            return RedirectToAction("Error", "Home");
+            return RedirectToAction("Index", "Home");
         }
 
         [Authorize]
-        [HttpGet]
+        [HttpGet("change-password")]
         public IActionResult ChangePassword()
         {
             var userEmail = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var user = _unitOfWork.User.Get(x => x.Email == userEmail);
+            var user = _unitOfWork.User.Get(u => u.Email == userEmail);
             ViewBag.IsFirstLogin = user?.IsFirstLogin;
             return View();
         }
 
         [Authorize]
-        [HttpPost]
+        [HttpPost("change-password")]
         public IActionResult ChangePassword(ChangePasswordVM model)
         {
             if (ModelState.IsValid)
             {
                 var userEmail = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
                 var user = _unitOfWork.User.Get(u => u.Email == userEmail);
-                ViewBag.IsFirstLogin = user?.IsFirstLogin;
                 if (user != null)
                 {
-                    if (user.Password != model.NewPassword )
+                    if (model.CurrentPassword == user.Password)
                     {
-                        if (model.CurrentPassword == user.Password)
+                        if (user.IsFirstLogin)
                         {
-                            if (user.IsFirstLogin)
-                            {
-                                user.IsFirstLogin = false;
-                            }
-                            user.Password = model.NewPassword;
-                            _unitOfWork.Save();
-                            ViewData["ValidateMessage"] = "Change password successful!";
+                            user.IsFirstLogin = false;
                         }
-                        else
-                        {
-                            ModelState.AddModelError("CurrentPassword", "Current password is incorrect.");
-                        }
+                        user.Password = model.NewPassword;
+                        _unitOfWork.Save();
+                        return RedirectToAction(nameof(Logout));
                     }
                     else
                     {
-                        ModelState.AddModelError("NewPassword", "The new password must be different from the current password.");
+                        ModelState.AddModelError("CurrentPassword", "Current password is incorrect.");
                     }
                 }
             }
             return View(model);
+        }
+
+        [HttpGet("forgot-password")]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordVM forgotPasswordVM)
+        {
+            if (!ModelState.IsValid)    // Email does not match format
+            {
+                return View(forgotPasswordVM);
+            }
+            //
+            User user = _unitOfWork.User.Get(u => u.Email == forgotPasswordVM.Email);
+            if (user is null)
+            {
+                ModelState.AddModelError(string.Empty, "No user found with that email.");
+                return View(forgotPasswordVM);
+            }
+            // Build the reset link
+            var resetLink = Url.Action("ResetPassword", "Account", new { email = user.Email }, Request.Scheme);
+
+            
+
+            // Send reset link via email
+            string subject = "Reset your password";
+            string body = $"Please click the following link to reset your password: <a href='{resetLink}'>Reset Password</a>";
+            // proceed to send the email
+            await _utilService.Email.SendEmail(user.Email, subject, body);
+
+            TempData["success"] = "Password reset link has been sent to your email.";
+            return View("ForgotPasswordConfirmation"); // Show a confirmation view
+
         }
 
         [Authorize]

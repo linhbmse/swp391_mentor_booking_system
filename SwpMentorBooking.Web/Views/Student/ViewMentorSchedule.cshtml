@@ -1,0 +1,56 @@
+﻿@model MentorScheduleWeekVM
+
+<h2>Schedule for mentor: @Model.MentorFullName</h2>
+<a asp-controller="Student" asp-action="ViewMentorProfile" asp-route-mentorId="@Model.MentorId" class="btn btn-primary">Back to Mentor Profile</a>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Slot</th>
+            @for (var day = 0; day < 7; day++)
+            {
+                <th>@Model.WeekStartDate.AddDays(day).ToString("ddd - dd/MM")</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var slot in Model.Slots)
+        {
+            <tr>
+                <td>
+                    Slot @slot.Id
+                    (@slot.StartTime.ToString(@"HH\:mm") - @slot.EndTime.ToString(@"HH\:mm"))
+                </td>
+                @for (var day = 0; day < 7; day++)
+                {
+                    var schedules = Model.DailySchedules.FirstOrDefault(ds => ds.Date == Model.WeekStartDate.AddDays(day))?.MentorSchedules;
+                    var currentSchedule = schedules?.FirstOrDefault(ms => ms.SlotId == slot.Id);
+
+                    <td>
+                        @if (currentSchedule != null && currentSchedule.Status == "available")
+                        {
+                            <span class="badge bg-success">Available</span>
+                        }
+                        else if (currentSchedule != null && currentSchedule.Status == "booked")
+                        {
+                            <span class="badge bg-danger">Booked</span>
+                        }
+                        else
+                        {
+                            <span class="text-muted">-</span>
+                        }
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-controller="Student" asp-action="ViewMentorSchedule"
+   asp-route-mentorId="@Model.MentorId"
+   asp-route-startDate="@Model.WeekStartDate.AddDays(-7).ToString("yyyy-MM-dd")"
+   class="btn btn-primary">Previous Week</a>
+
+<a asp-controller="Student" asp-action="ViewMentorSchedule"
+   asp-route-mentorId="@Model.MentorId"
+   asp-route-startDate="@Model.WeekStartDate.AddDays(7).ToString("yyyy-MM-dd")"
+   class="btn btn-primary">Next Week</a>

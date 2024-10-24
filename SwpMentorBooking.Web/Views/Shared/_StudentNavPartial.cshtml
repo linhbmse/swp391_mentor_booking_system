@@ -1,0 +1,24 @@
+<li class="nav-item">
+    <a class=" text-dark nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")" asp-action="Index" asp-controller="Student">
+        <i class="fas fa-home"></i>
+        <span>Homepage</span>
+    </a>
+</li>
+<li class="nav-item">
+    <a class="text-dark nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "MyGroup" ? "active" : "")" asp-action="MyGroup" asp-controller="Student">
+        <i class="fas fa-users"></i>
+        <span>Group</span>
+    </a>
+</li>
+<li class="nav-item">
+    <a class="text-dark nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "ViewStudentBookings" ? "active" : "")" asp-action="ViewStudentBookings" asp-controller="Booking">
+        <i class="fas fa-calendar-alt"></i>
+        <span>Bookings</span>
+    </a>
+</li>
+<li class="nav-item">
+    <a class="text-dark nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "MyHistory" ? "active" : "")" asp-action="MyHistory" asp-controller="Student">
+        <i class="fas fa-history"></i>
+        <span>History</span>
+    </a>
+</li>
