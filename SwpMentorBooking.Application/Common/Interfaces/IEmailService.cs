@@ -8,6 +8,6 @@ namespace SwpMentorBooking.Application.Common.Interfaces
 {
     public interface IEmailService
     {
-        void SendEmail(string receiverMail, string subject, string message);
+        Task SendEmail(string receiverMail, string subject, string message);
     }
 }

@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 
 namespace SwpMentorBooking.Application.Common.Interfaces
 {
-    public interface ITopicRepository : IRepository<Topic>
+    public interface IRequestRepository : IRepository<Request>
     {
-        Topic Update(Topic entity);
     }
 }

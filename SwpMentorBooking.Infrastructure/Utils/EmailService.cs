@@ -27,7 +27,7 @@ namespace SwpMentorBooking.Infrastructure.Utils
         //    _smtpHost = smtpHost;
         //    _sender = sender;
         //}
-        public void SendEmail(string receiverMail, string subject, string message)
+        public async Task SendEmail(string receiverMail, string subject, string message)
         {
             var mail = new MimeMessage();
             mail.From.Add(new MailboxAddress(_senderName, _senderMailAddress));
@@ -35,7 +35,7 @@ namespace SwpMentorBooking.Infrastructure.Utils
 
             mail.Subject = subject;
 
-            mail.Body = new TextPart("plain")
+            mail.Body = new TextPart("html")
             {
                 Text = $"{message}"
             };
@@ -44,7 +44,7 @@ namespace SwpMentorBooking.Infrastructure.Utils
             {
                 client.Connect(_smtpHostAddress, 587, false);
                 client.Authenticate(_senderMailAddress, _appPassword);
-                client.Send(mail);
+                await client.SendAsync(mail);
                 client.Disconnect(true);
             }
 

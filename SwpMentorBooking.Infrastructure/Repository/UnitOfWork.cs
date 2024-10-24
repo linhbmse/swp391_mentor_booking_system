@@ -14,6 +14,7 @@ namespace SwpMentorBooking.Infrastructure.Repository
     {
         private readonly ApplicationDbContext _context;
         public IUserRepository User { get; private set; }
+        public IAdminRepository Admin  { get; private set; }
         public IStudentRepository Student { get; private set; }
         public IMentorRepository Mentor { get; private set; }
         public IMentorScheduleRepository MentorSchedule { get; private set; }
@@ -24,10 +25,13 @@ namespace SwpMentorBooking.Infrastructure.Repository
         public ITopicRepository Topic { get; private set; }
         public IWalletRepository Wallet { get; private set; }
         public IBookingRepository Booking { get; private set; }
+        public IRequestRepository Request {  get; private set; }
+        public IResponseRepository Response {  get; private set; }
         public UnitOfWork(ApplicationDbContext context)
         {
             _context = context;
             User = new UserRepository(_context);
+            Admin = new AdminRepository(_context);
             Student = new StudentRepository(_context);
             Mentor = new MentorRepository(_context);
             MentorSchedule = new MentorScheduleRepository(_context);
@@ -38,6 +42,8 @@ namespace SwpMentorBooking.Infrastructure.Repository
             Topic = new TopicRepository(_context);
             Wallet = new WalletRepository(_context);
             Booking = new BookingRepository(_context);
+            Request = new RequestRepository(_context);
+            Response = new ResponseRepository(_context);
         }
 
 

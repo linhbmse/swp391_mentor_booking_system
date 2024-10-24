@@ -10,6 +10,7 @@ namespace SwpMentorBooking.Application.Common.Interfaces
     public interface IUnitOfWork
     {
         IUserRepository User { get; }
+        IAdminRepository Admin {  get; }
         IStudentRepository Student { get; }
         IMentorRepository Mentor { get; }
         IMentorScheduleRepository MentorSchedule { get; }
@@ -20,6 +21,8 @@ namespace SwpMentorBooking.Application.Common.Interfaces
         ITopicRepository Topic { get; }
         IWalletRepository Wallet { get; }
         IBookingRepository Booking {  get; }
+        IRequestRepository Request {  get; }
+        IResponseRepository Response {  get; }
         IDbContextTransaction BeginTransaction();
         void Save();
 

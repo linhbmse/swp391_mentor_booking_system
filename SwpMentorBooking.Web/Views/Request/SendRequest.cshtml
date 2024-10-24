@@ -1,0 +1,25 @@
+﻿@model RequestVM
+
+<h2>Submit a New Request</h2>
+<a href="@Url.Action("ViewGroupRequests", "Request")" class="btn btn-secondary">Back to Requests</a>
+<form asp-action="SendRequest" method="post">
+    <div class="form-group">
+        <label asp-for="GroupName"></label>
+        <input asp-for="GroupName" value="@Model.GroupName" readonly class="form-control" />
+
+    </div>
+    <div class="form-group">
+
+        <input asp-for="@Model.LeaderId" value="@Model.LeaderId" hidden />
+
+        <label asp-for="Request.Title"></label>
+        <input asp-for="Request.Title" class="form-control" />
+        <span asp-validation-for="Request.Title" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Request.Content"></label>
+        <textarea asp-for="Request.Content" class="form-control"></textarea>
+        <span asp-validation-for="Request.Content" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
