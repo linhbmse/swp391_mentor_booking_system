@@ -1,4 +1,5 @@
-﻿using SwpMentorBooking.Domain.Entities;
+﻿using SwpMentorBooking.Application.Common.Interfaces;
+using SwpMentorBooking.Domain.Entities;
 using System;
 
 namespace SwpMentorBooking.Web.Helpers
@@ -15,6 +16,22 @@ namespace SwpMentorBooking.Web.Helpers
         public static bool IsBookingApprovable(Booking booking)
         {
             return booking.Status == "pending" && !IsBookingInPast(booking.MentorSchedule);
+        }
+        public static bool IsBookingCompletable(Booking booking)
+        {
+            return booking.Status == "confirmed";
+        }
+        public static bool IsBookingFeedbackable(Booking booking, User user, IUnitOfWork unitOfWork)
+        {
+            if (booking.Status is not "completed")
+            {
+                return false;
+            }
+
+            // Check if the user has already given feedback for this booking
+            var existingFeedback = unitOfWork.Feedback.Get(f => f.BookingId == booking.Id && f.GivenBy == user.Id);
+
+            return (existingFeedback == null);
         }
     }
 }

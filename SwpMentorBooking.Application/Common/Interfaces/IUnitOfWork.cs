@@ -21,6 +21,7 @@ namespace SwpMentorBooking.Application.Common.Interfaces
         ITopicRepository Topic { get; }
         IWalletRepository Wallet { get; }
         IBookingRepository Booking {  get; }
+        IFeedbackRepository Feedback { get; }
         IRequestRepository Request {  get; }
         IResponseRepository Response {  get; }
         IDbContextTransaction BeginTransaction();

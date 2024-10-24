@@ -7,6 +7,7 @@ using SwpMentorBooking.Infrastructure.Data;
 using SwpMentorBooking.Web.ViewModels;
 using SwpMentorBooking.Application.Common.Interfaces;
 using SwpMentorBooking.Domain.Entities;
+using SwpMentorBooking.Infrastructure.Utils;
 
 
 namespace Demo.Controllers
@@ -14,15 +15,17 @@ namespace Demo.Controllers
     public class AccountController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IUtilService _utilService;
         private enum Roles
         {
             Admin,
             Student,
             Mentor
         }
-        public AccountController(IUnitOfWork unitOfWork)
+        public AccountController(IUnitOfWork unitOfWork, IUtilService utilService)
         {
             _unitOfWork = unitOfWork;
+            _utilService = utilService;
         }
 
         [HttpGet]
@@ -144,6 +147,42 @@ namespace Demo.Controllers
                 }
             }
             return View(model);
+        }
+
+        [HttpGet("forgot-password")]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordVM forgotPasswordVM)
+        {
+            if (!ModelState.IsValid)    // Email does not match format
+            {
+                return View(forgotPasswordVM);
+            }
+            //
+            User user = _unitOfWork.User.Get(u => u.Email == forgotPasswordVM.Email);
+            if (user is null)
+            {
+                ModelState.AddModelError(string.Empty, "No user found with that email.");
+                return View(forgotPasswordVM);
+            }
+            // Build the reset link
+            var resetLink = Url.Action("ResetPassword", "Account", new { email = user.Email }, Request.Scheme);
+
+
+
+            // Send reset link via email
+            string subject = "Reset your password";
+            string body = $"Please click the following link to reset your password: <a href='{resetLink}'>Reset Password</a>";
+            // proceed to send the email
+            await _utilService.Email.SendEmail(user.Email, subject, body);
+
+            TempData["success"] = "Password reset link has been sent to your email.";
+            return View("ForgotPasswordConfirmation"); // Show a confirmation view
+
         }
 
         [Authorize]

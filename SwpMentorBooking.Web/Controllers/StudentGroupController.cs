@@ -123,7 +123,6 @@ namespace SwpMentorBooking.Web.Controllers
                                         })
                                         .ToList(),
             };
-
             return View(nameof(AddMember), searchGroupMemberVM);
         }
 

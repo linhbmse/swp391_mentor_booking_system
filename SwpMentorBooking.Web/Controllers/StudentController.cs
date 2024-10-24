@@ -56,6 +56,42 @@ namespace SwpMentorBooking.Web.Controllers
             return View(studentProfileVM);
         }
 
+        [HttpGet("update")]
+        public IActionResult UpdateProfile()
+        {
+            var userEmail = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = _unitOfWork.User.Get(u => u.Email == userEmail, includeProperties: nameof(StudentDetail));
+            var studentProfileVM = new StudentDetailVM
+            {
+                UserId = user.Id,
+                Email = user.Email,
+                FullName = user.FullName,
+                Phone = user.Phone,
+                Gender = user.Gender,
+                StudentCode = user.StudentDetail.StudentCode
+            };
+            return View(studentProfileVM);
+        }
+
+        [HttpPost("update")]
+        public IActionResult UpdateProfile(StudentDetailVM updatedModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var userEmail = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var user = _unitOfWork.User.Get(u => u.Email == userEmail);
+                if (user != null)
+                {
+                    user.Phone = updatedModel.Phone;
+                    _unitOfWork.User.Update(user);
+                    _unitOfWork.Save();
+
+                }
+                TempData["ValidateMessage"] = "Update successful!";
+            }
+            return RedirectToAction("MyProfile");
+        }
+
         [HttpGet("group")]
         public IActionResult MyGroup()
         {
@@ -71,7 +107,13 @@ namespace SwpMentorBooking.Web.Controllers
             // Get the Student group info
             StudentGroup studentGroup = _unitOfWork.StudentGroup.Get(g => g.Id == studentDetail.GroupId,
                         includeProperties: $"{nameof(Topic)},{nameof(Wallet)},StudentDetails.User");
-            List<StudentDetail> groupMembers = studentGroup.StudentDetails.ToList();
+
+            List<StudentDetail>? groupMembers = new List<StudentDetail>();
+            // Handle the case where the student does not belong to any group
+            if (studentGroup is not null)
+            {
+                groupMembers = studentGroup.StudentDetails?.ToList();
+            }
 
             StudentGroupDetailVM studentGroupDetailVM = new StudentGroupDetailVM
             {

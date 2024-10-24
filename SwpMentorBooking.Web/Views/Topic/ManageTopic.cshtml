@@ -2,7 +2,7 @@
 
 @{
     ViewData["Title"] = "Manage Topics";
-    Layout = "_AdminLayout";
+    Layout = "_Layout";
 }
 
 @* <div class="card bg-purple text-white mb-4">
@@ -55,47 +55,44 @@
     </div>
 </div> *@
 
-<div class="card bg-purple text-white mb-4">
+<div class="card mb-4">
     <div class="card-body">
-        <h1 class="text-center mb-0">Manage Topics</h1>
+        <div class="row">
+            <div class="col-md-12">
+                <h2>Current Topics</h2>
+                <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addTopicModal">
+                    Add New Topic
+                </button>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var topic in Model.Topics)
+                        {
+                            <tr>
+                                <td>@topic.Name</td>
+                                <td>@topic.Description</td>
+                                <td>
+                                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editTopicModal" data-topic-id="@topic.Id" data-topic-name="@topic.Name" data-topic-description="@topic.Description">
+                                        Edit
+                                    </button>
+                                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteTopicModal" data-topic-id="@topic.Id" data-topic-name="@topic.Name">
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
-
-<div class="row">
-    <div class="col-md-12">
-        <h2>Current Topics</h2>
-        <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addTopicModal">
-            Add New Topic
-        </button>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var topic in Model.Topics)
-                {
-                    <tr>
-                        <td>@topic.Name</td>
-                        <td>@topic.Description</td>
-                        <td>
-                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editTopicModal" data-topic-id="@topic.Id" data-topic-name="@topic.Name" data-topic-description="@topic.Description">
-                                Edit
-                            </button>
-                            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteTopicModal" data-topic-id="@topic.Id" data-topic-name="@topic.Name">
-                                Delete
-                            </button>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-</div>
-
 <!-- Add Topic Modal -->
 <div class="modal fade" id="addTopicModal" tabindex="-1" aria-labelledby="addTopicModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -136,7 +133,7 @@
             </div>
             <div class="modal-body">
                 <form asp-action="EditTopic" asp-controller="Topic" method="post">
-                    <input type="hidden" id="editTopicId" name="Id" />
+                    <input type="hidden" id="editTopicId" name="topicId" />
                     <div class="form-group">
                         <label for="editTopicName">Name</label>
                         <input type="text" class="form-control" id="editTopicName" name="Name" required>

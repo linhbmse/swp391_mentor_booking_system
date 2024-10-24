@@ -24,6 +24,64 @@
                 <button type="submit" class="btn btn-success">Confirm Booking</button>
             </form>
         }
+        @if (Model.IsCompletable)
+        {
+            <form asp-action="CompleteBooking" asp-route-bookingId="@Model.BookingId" method="post" style="display: inline;">
+                <button type="submit" class="btn btn-success btn-sm">Meeting Complete</button>
+            </form>
+        }
+        @if (Model.IsFeedbackable)
+        {
+            <a asp-controller="Feedback" asp-action="SendFeedback" asp-route-bookingId="@Model.BookingId"
+            class="btn btn-warning btn-sm">Send Feedback</a>
+        }
     </div>
 </div>
 
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">Confirm Booking</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Do you want to confirm this booking?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="confirmForm" asp-controller="Booking" asp-action="ApproveBooking" method="post">
+                    <input hidden id="bookingIdInput" name="bookingId" value="" />
+                    <button type="submit" class="btn btn-success">Confirm</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Complete Meeting Modal -->
+<div class="modal fade" id="completeModal" tabindex="-1" aria-labelledby="completeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="completeModalLabel">Complete Meeting</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to mark this meeting as complete?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="completeForm" asp-controller="Booking" asp-action="CompleteBooking" method="post">
+                    <input hidden id="completeBookingIdInput" name="bookingId" value="" />
+                    <button type="submit" class="btn btn-primary">Complete Meeting</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/approveBooking.js"></script>
+}

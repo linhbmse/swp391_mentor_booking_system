@@ -45,6 +45,7 @@ namespace SwpMentorBooking.Web.Controllers
             return View(manageUserVM);
         }
 
+        [HttpGet("import-users")]
         public IActionResult Import()
         {
             ImportUserTypeVM importUserTypeVM = new ImportUserTypeVM()
@@ -320,6 +321,17 @@ namespace SwpMentorBooking.Web.Controllers
             if (userToDelete is not null)   // User to delete is found
             {   // Process profile image logic
             }
+
+            if (userToDelete.StudentDetail is not null)
+            {
+                var bookingList = _unitOfWork.Booking.GetAll(b => b.LeaderId == userToDelete.Id);
+                foreach (var booking in bookingList)
+                {
+                    _unitOfWork.Booking.Delete(booking);
+                }
+                _unitOfWork.Save();
+            }
+
             // Delete the retrieved user from DB
             User deletedUser;
             using (var transaction = _unitOfWork.BeginTransaction())

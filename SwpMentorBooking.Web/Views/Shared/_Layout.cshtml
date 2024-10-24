@@ -10,7 +10,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - SwpMentorBooking.Web</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    @* <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" /> *@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -22,12 +22,12 @@
             <div class="container-fluid" style="background-color: #ffffff">
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="d-flex align-items-center">
-                        <img src="~/image/mentor.jpg" alt="Mentoring Logo" class="me-2" width="40" height="40">
+                        <img src="~/image/mentor.jpg" alt="Mentoring Logo" class="me-2" width="60" height="60">
                         <h1 class="h4 mb-0">Mentoring</h1>
                     </div>
                     <div class="dropdown">
                         <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="..." width="32" height="32" class="rounded-circle me-2">
+                            <img src="~/image/profile-default.png" alt="Profile" width="32" height="32" class="rounded-circle me-2">
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end text-small shadow" aria-labelledby="dropdownUser1">
                             <li><span class="dropdown-item-text" id="leaderNameDropdown">@User.Identity.Name</span></li>
@@ -48,26 +48,28 @@
 
 
         <!--Navbar-->
+        @if (User.Identity.IsAuthenticated) {
             <div class="d-flex flex-grow-1 mt-5 pt-3">
                 <nav class="sidebar bg-light">
                     <ul class="nav flex-column">
-                        @if (userRole.Equals("Admin"))
-                        {                          
-                           <partial name="_AdminNavPartial" />
-                        }
-                        @if (userRole.Equals("Student"))
-                        {
-                            <partial name="_StudentNavPartial" />
-                        }
-                        @if (userRole.Equals("Mentor"))
-                        {
-                            <partial name="_MentorNavPartial" />
-                        }
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <partial name="_AdminNavPartial" />
+                                }
+                                else if (User.IsInRole("Student"))
+                                {
+                                    <partial name="_StudentNavPartial" />
+                                }
+                                else if (User.IsInRole("Mentor"))
+                                {
+                                    <partial name="_MentorNavPartial" />
+                                }
                 </ul>
                 </nav>
             </div>
-        
+        }
         <main class="flex-grow-1 py-4 px-3">
+            <partial name="_Notification">
             @RenderBody()
         </main>
 
@@ -96,7 +98,7 @@
         </div>
     </footer> *@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <!-- <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script> -->
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script>

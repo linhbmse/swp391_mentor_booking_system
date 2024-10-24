@@ -16,5 +16,7 @@
         public string? TopicName { get; set; }
         public bool IsPastBooking {  get; set; }
         public bool IsApprovable { get; set; } = false;
+        public bool IsCompletable {  get; set; } = false;
+        public bool IsFeedbackable { get; set; } = false;
     }
 }

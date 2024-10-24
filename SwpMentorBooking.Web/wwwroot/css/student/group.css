@@ -1,0 +1,41 @@
+﻿.card {
+    transition: transform 0.3s;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+
+.group-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.member-list {
+    list-style-type: none;
+    padding-left: 0;
+    text-align: left;
+}
+
+    .member-list li {
+        margin-bottom: 0.5rem;
+        padding: 0.5rem;
+        background-color: #f1f3f5;
+        border-radius: 5px;
+    }
+
+        .member-list li.leader {
+            background-color: #e9ecef;
+            border: 2px solid #007bff;
+            font-weight: bold;
+        }
+
+.card-subtitle {
+    margin-top: -0.5rem;
+    margin-bottom: 1rem;
+}
+
+a {
+    text-decoration: none;
+}

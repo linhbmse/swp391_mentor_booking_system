@@ -18,7 +18,7 @@ namespace SwpMentorBooking.Web.Controllers
         }
 
         [HttpGet("all")]
-        public IActionResult Index()
+        public IActionResult ManageTopic()
         {
             IEnumerable<Topic> topics = _unitOfWork.Topic.GetAll();
 
@@ -36,7 +36,7 @@ namespace SwpMentorBooking.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(nameof(Index), manageTopicVM);
+                return View(nameof(ManageTopic), manageTopicVM);
             }
             // Model is valid
             using (var transaction = _unitOfWork.BeginTransaction())
@@ -52,12 +52,12 @@ namespace SwpMentorBooking.Web.Controllers
                 {
                     transaction.Rollback();
                     TempData["error"] = "An error has occurred when adding new topic. Please try again.";
-                    return View(nameof(Index), manageTopicVM);
+                    return View(nameof(ManageTopic), manageTopicVM);
                 }
             }
             // Topic creation is successful
             TempData["success"] = "Topic added successfully.";
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(ManageTopic));
         }
 
         [HttpPost("edit-topic")]
@@ -68,7 +68,7 @@ namespace SwpMentorBooking.Web.Controllers
             if (topicToUpdate is null)
             {
                 TempData["error"] = "An error has occurred. Please try again.";
-                return View(nameof(Index));
+                return View(nameof(ManageTopic));
             }
             // Topic is existent in database
             using (var transaction = _unitOfWork.BeginTransaction())
@@ -84,12 +84,12 @@ namespace SwpMentorBooking.Web.Controllers
                 {
                     transaction.Rollback();
                     TempData["error"] = "An error has occurred when updating the topic. Please try again.";
-                    return View(nameof(Index));
+                    return View(nameof(ManageTopic));
                 }
             }
             // Topic update is successful
             TempData["success"] = "Topic has been updated successfully.";
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(ManageTopic));
         }
 
         [HttpPost("delete-topic")]
@@ -116,12 +116,12 @@ namespace SwpMentorBooking.Web.Controllers
                 {
                     transaction.Rollback();
                     TempData["error"] = "An error has occurred when deleting the topic. Please try again.";
-                    return View(nameof(Index));
+                    return View(nameof(ManageTopic));
                 }
             }
             // Topic update is successful
             TempData["success"] = "Topic has been deleted successfully.";
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(ManageTopic));
         }
     }
 }

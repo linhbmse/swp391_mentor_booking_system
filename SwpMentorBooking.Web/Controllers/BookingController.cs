@@ -343,7 +343,10 @@ namespace SwpMentorBooking.Web.Controllers
                 SlotStartTime = b.MentorSchedule.Slot.StartTime,
                 SlotEndTime = b.MentorSchedule.Slot.EndTime,
                 Timestamp = b.Timestamp,
-                Status = b.Status
+                Status = b.Status,
+                IsCompletable = BookingScheduleHelper.IsBookingCompletable(b)
+                && student.IsLeader,
+                IsFeedbackable = BookingScheduleHelper.IsBookingFeedbackable(b, student.User, _unitOfWork)
             }).ToList();
 
             var studentBookingsVM = new MentorBookingsVM
@@ -455,6 +458,7 @@ namespace SwpMentorBooking.Web.Controllers
                 Status = b.Status,
                 IsPastBooking = BookingScheduleHelper.IsBookingInPast(b.MentorSchedule),
                 IsApprovable = BookingScheduleHelper.IsBookingApprovable(b),
+                IsFeedbackable = BookingScheduleHelper.IsBookingFeedbackable(b, mentor.User, _unitOfWork),
                 Note = b.Note
             }).ToList();
 
@@ -471,11 +475,16 @@ namespace SwpMentorBooking.Web.Controllers
             return View(mentorBookingsVM);
         }
 
-        [Authorize(Roles = "Admin, Mentor, Student")]
+        [Authorize(Roles = "Mentor, Student")]
         [HttpGet("detail/{bookingId}")]
         // View booking detail based on bookingId
         public IActionResult ViewBookingDetail(int bookingId)
         {
+            // Get user info
+            var userEmail = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = _unitOfWork.User.Get(u => u.Email == userEmail, 
+                includeProperties: $"{nameof(StudentDetail)},{nameof(MentorDetail)}");
+
             // Retrieve the booking with all necessary related entities
             Booking booking = _unitOfWork.Booking.Get(b => b.Id == bookingId,
                 includeProperties: "MentorSchedule.MentorDetail.User,MentorSchedule.Slot,Leader.User,Leader.Group");
@@ -501,7 +510,14 @@ namespace SwpMentorBooking.Web.Controllers
 
                 IsPastBooking = BookingScheduleHelper.IsBookingInPast(booking.MentorSchedule),
                 IsApprovable = User.IsInRole("Mentor")
-                && BookingScheduleHelper.IsBookingApprovable(booking)
+                && BookingScheduleHelper.IsBookingApprovable(booking),
+
+                IsCompletable = booking.LeaderId == user.Id
+                && BookingScheduleHelper.IsBookingCompletable(booking),
+
+                IsFeedbackable = BookingScheduleHelper.IsBookingFeedbackable(booking, user, _unitOfWork)
+
+
             };
 
             return View(bookingDetailVM);
@@ -546,6 +562,41 @@ namespace SwpMentorBooking.Web.Controllers
             }
 
             return RedirectToAction(nameof(ViewMentorBookings));
+        }
+
+        [Authorize(Roles = "Student", Policy = "GroupLeaderOnly")]
+        [HttpPost("complete")]
+        public IActionResult CompleteBooking(int bookingId)
+        {
+            var booking = _unitOfWork.Booking.Get(b => b.Id == bookingId);
+            if (booking == null)
+            {
+                return NotFound();
+            }
+
+            if (booking.Status != "confirmed")
+            {
+                TempData["error"] = "Only confirmed bookings can be marked as completed.";
+                return RedirectToAction(nameof(ViewStudentBookings));
+            }
+            using (var transaction = _unitOfWork.BeginTransaction())
+            {
+                try { 
+                booking.Status = "completed";
+                _unitOfWork.Booking.Update(booking);
+                _unitOfWork.Save();
+                transaction.Commit();
+                } catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    TempData["error"] = "An error has occurred completing the meeting. Please try again.";
+                    return View(nameof(ViewStudentBookings));
+
+                }
+            }
+
+            TempData["success"] = "Booking marked as completed successfully.";
+            return RedirectToAction(nameof(ViewStudentBookings));
         }
     }
 }
