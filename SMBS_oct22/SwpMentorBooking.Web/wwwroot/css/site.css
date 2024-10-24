@@ -1,4 +1,4 @@
-html {
+/*html {
     font-size: 14px;
 }
 
@@ -19,5 +19,55 @@ html {
 
 body {
     margin-bottom: 60px;
+}*/
+html {
+    font-size: 14px;
 }
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    background-color: #e6f3ff !important;
+    margin-bottom: 60px;
+}
+
+.skill-badge {
+    display: inline-block;
+    padding: 0.35rem 0.75rem;
+    background-color: #e6f0ff;
+    color: #0d6efd;
+    border-radius: 50rem;
+    font-size: 0.875rem;
+    margin: 0.25rem;
+}
+
+
+.skill-section {
+    margin-bottom: 1.5rem;
+}
+
+    .skill-section:last-child {
+        margin-bottom: 0;
+    }
+
+.skill-title {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+}
+
 

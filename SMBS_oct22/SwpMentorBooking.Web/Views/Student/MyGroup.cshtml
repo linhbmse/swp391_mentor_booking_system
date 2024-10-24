@@ -1,63 +1,63 @@
 ﻿@model StudentGroupDetailVM
 
 <div class="card bg-purple text-white mb-4">
-    <div class="card-body">
-        <h1 class="text-center mb-0">Group Details</h1>
-    </div>
+	<div class="card-body">
+		<h1 class="text-center mb-0">Group Details</h1>
+	</div>
 </div>
 
 @if (Model.StudentGroup is null)
 {
-    <div class="card-body border p-4">
-        <h2>You are not in any group.</h2>
-        <span>Mind getting started with a group?</span>
-        <a asp-action="Create" asp-controller="StudentGroup" class="btn btn-primary">Create a group</a>
-    </div>
+	<div class="card-body border p-4">
+		<h2>You are not in any group.</h2>
+		<span>Mind getting started with a group?</span>
+		<a asp-action="Create" asp-controller="StudentGroup" class="btn btn-primary">Create a group</a>
+	</div>
 }
 else
 {
-    <div class="card-body border p-4">
-        <div>
-            @if (Model.Student.IsLeader)
-            {
-                <a asp-action="AddMember" asp-controller="StudentGroup" class="btn btn-info mx-3">Add new members</a>
-                <a asp-action="Edit" asp-controller="StudentGroup" asp-route-groupId="@Model.StudentGroup.Id" class="btn btn-success mx-3">Edit group info</a>
-            }
-            <h2>Group Name: @Model.StudentGroup.GroupName</h2>
-            <p><strong>Topic:</strong> @Model.StudentGroup.Topic?.Name</p>
-            <p><strong>Wallet Balance:</strong> @Model.StudentGroup.Wallet.Balance</p>
-        </div>
+	<div class="card-body border p-4">
+		<div>
+			@if (Model.Student.IsLeader)
+			{
+				<a asp-action="AddMember" asp-controller="StudentGroup" class="btn btn-info mx-3">Add new members</a>
+				<a asp-action="Edit" asp-controller="StudentGroup" asp-route-groupId="@Model.StudentGroup.Id" class="btn btn-success mx-3">Edit group info</a>
+			}
+			<h2>Group Name: @Model.StudentGroup.GroupName</h2>
+			<p><strong>Topic:</strong> @Model.StudentGroup.Topic?.Name</p>
+			<p><strong>Wallet Balance:</strong> @Model.StudentGroup.Wallet.Balance</p>
+		</div>
 
-        <h3>Students in this Group:</h3>
-        <ul>
-            @foreach (var student in Model.GroupMembers)
-            {
-                <li>
-                    @student.User.FullName (@student.User.Email)
-                    @if (student.IsLeader)
-                    {
-                        <strong>(Leader)</strong>
-                    }
-                </li>
-            }
-        </ul>
+		<h3>Students in this Group:</h3>
+		<ul>
+			@foreach (var student in Model.GroupMembers)
+			{
+				<li>
+					@student.User.FullName (@student.User.Email)
+					@if (student.IsLeader)
+					{
+						<strong>(Leader)</strong>
+					}
+				</li>
+			}
+		</ul>
 
-        <!-- Display buttons for group leaders -->
-        @if (Model.Student.IsLeader)
-        {
-            <div class="mt-4">
-                <!-- Button to view existing requests -->
-                <a href="@Url.Action("Index", "Request")" class="btn btn-secondary">View Requests</a>
+		<!-- Display buttons for group leaders -->
+		@if (Model.Student.IsLeader)
+		{
+			<div class="mt-4">
+				<!-- Button to view existing requests -->
+				<a href="@Url.Action("Index", "Request")" class="btn btn-secondary">View Requests</a>
 
-                <!-- Button to submit a new request -->
-                <a href="@Url.Action("SendRequest", "Request")" class="btn btn-primary">Submit Request for Wallet Points</a>
-            </div>
-        }
-    </div>
+				<!-- Button to submit a new request -->
+				<a href="@Url.Action("SendRequest", "Request")" class="btn btn-primary">Submit Request for Wallet Points</a>
+			</div>
+		}
+	</div>
 }
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <style>
-    .bg-purple {
-        background-color: #6f42c1;
-    }
+	.bg-purple {
+		background-color: #6f42c1;
+	}
 </style>

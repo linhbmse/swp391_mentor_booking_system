@@ -1,4 +1,4 @@
-<li class="nav-item">
+<!--<li class="nav-item">
     <a class="nav-link text-dark" asp-controller="Mentor" asp-action="Index">Home</a>
 </li>
 <li class="nav-item">
@@ -6,4 +6,22 @@
 </li>
 <li class="nav-item">
     <a class="nav-link text-dark" asp-action="ViewMentorBookings" asp-controller="Booking">Bookings</a>
+</li>  -->
+<li class="nav-item">
+    <a class=" text-dark nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")" asp-action="Index" asp-controller="Mentor">
+        <i class="fas fa-home"></i>
+        <span>Homepage</span>
+    </a>
+</li>
+<li class="nav-item">
+    <a class="text-dark nav-link  @(ViewContext.RouteData.Values["Action"].ToString() == "SetSchedule" ? "active" : "")" asp-action="ViewSchedule" asp-controller="Mentor">
+        <i class="fas fa-users"></i>
+        <span>My Schedule</span>
+    </a>
+</li>
+<li class="nav-item">
+    <a class="text-dark nav-link @(ViewContext.RouteData.Values["Action"].ToString() == "MyHistory" ? "active" : "")" asp-action="ViewMentorBookings" asp-controller="Booking">
+        <i class="fas fa-history"></i>
+        <span>Booking</span>
+    </a>
 </li>

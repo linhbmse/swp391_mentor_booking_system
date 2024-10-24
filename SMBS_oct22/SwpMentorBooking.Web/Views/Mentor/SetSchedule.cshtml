@@ -1,102 +1,180 @@
 ﻿@model MentorScheduleWeekVM
 
-<h2>Edit schedule for mentor: @Model.MentorFullName</h2>
-<a href="@Url.Action("SetSchedule", new { startDate = Model.WeekStartDate.AddDays(-7) })" class="btn btn-primary">Previous Week</a>
-<a href="@Url.Action("SetSchedule", new { startDate = Model.WeekStartDate.AddDays(7) })" class="btn btn-primary">Next Week</a>
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Slot</th>
-            @for (var day = 0; day < 7; day++)
-            {
-                <th>@Model.WeekStartDate.AddDays(day).ToString("ddd - dd/MM")</th>
-            }
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var slot in Model.Slots)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Edit Schedule for @Model.MentorFullName</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<!--<link rel="stylesheet" href="~/css/Schedule.css"> <!-- Custom styles -->
+	<style>
+		body {
+			padding-top: 5px;
+		}
+	</style>
+</head>
+<body>
 
-        {
-            <tr>
-                <td>
-                    Slot @slot.Id
-                    (@slot.StartTime.ToString(@"HH\:mm") - @slot.EndTime.ToString(@"HH\:mm"))
-                </td>
-                @for (var day = 0; day < 7; day++)
+	<!-- Main content with sidebar -->
+	<div class="container-fluid">
+		<div class="row">
+			<!-- Sidebar -->
+			<nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+				<div class="position-sticky pt-3">
+					<ul class="nav flex-column">
+						<li class="nav-item">
+							<a class="nav-link" asp-controller="Mentor" asp-action="ViewSchedule">Schedule</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link active" asp-controller="Mentor" asp-action="SetSchedule">Set Schedule</a>
+						</li>
+					</ul>
+				</div>
+			</nav>
 
-                {
+			<!-- Main content -->
+			<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+				<h3 class="text-center mb-3">Edit schedule for mentor: @Model.MentorFullName</h3>
 
-                    var schedules = Model.DailySchedules.FirstOrDefault(ds => ds.Date == Model.WeekStartDate.AddDays(day))?.MentorSchedules;
+				<div class="table-responsive ">
+					<table class="table table-bordered">
+						<thead>
+							<tr>
+								<th>Slot</th>
+								@for (var day = 0; day < 7; day++)
 
-                    var currentSchedule = schedules?.FirstOrDefault(ms => ms.SlotId == slot.Id);
 
-                    <td>
-                        @{
-                            var currentDate = Model.WeekStartDate.AddDays(day);
 
-                            var isPastDay = Model.DailySchedules[day].IsPastDay;
+								{
+									<th>@Model.WeekStartDate.AddDays(day).ToString("ddd - dd/MM")</th>
+								}
+							</tr>
+						</thead>
+						<tbody>
+							@foreach (var slot in Model.Slots)
 
-                            var isPastSlot = isPastDay || (currentDate.Date == DateTime.Today && DateTime.Now.TimeOfDay > slot.EndTime.ToTimeSpan());
-                        }
-                        @if (currentSchedule != null)
-                        {
-                            <div class="status-slot">
-                                @if (currentSchedule.Status == "available")
 
-                                {
-                                    <span class="badge bg-success">Available</span>
-                                    @if (!isPastSlot)
 
-                                    {
-                                        <form method="post" asp-action="ToggleSlotAvailability">
-                                            <input type="hidden" name="mentorScheduleId" value="@currentSchedule.Id" />
-                                            <input type="hidden" name="slotId" value="@slot.Id" />
-                                            <input type="hidden" name="date" value="@Model.WeekStartDate.AddDays(day).ToString("yyyy-MM-dd")" />
-                                            <button type="submit" class="btn btn-sm btn-warning">Mark as Unavailable</button>
-                                        </form>
-                                    }
-                                }
-                                else if (currentSchedule.Status == "booked")
+							{
+								<tr>
+									<td>Slot @slot.Id (@slot.StartTime.ToString(@"HH\:mm") - @slot.EndTime.ToString(@"HH\:mm"))</td>
+									@for (var day = 0; day < 7; day++)
 
-                                {
-                                    <span class="badge bg-danger">Booked</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-warning">Unavailable</span>
-                                    @if (!isPastSlot)
 
-                                    {
-                                        <form method="post" asp-action="ToggleSlotAvailability">
-                                            <input type="hidden" name="mentorScheduleId" value="@currentSchedule.Id" />
-                                            <input type="hidden" name="slotId" value="@slot.Id" />
-                                            <input type="hidden" name="date" value="@Model.WeekStartDate.AddDays(day).ToString("yyyy-MM-dd")" />
-                                            <button type="submit" class="btn btn-sm btn-success">Mark as Available</button>
-                                        </form>
-                                    }
-                                }
-                            </div>
-                        }
 
-                        else
+									{
 
-                        {
-                            <span class="text-muted">-</span>
-                            @if (!isPastSlot)
 
-                            {
-                                <form method="post" asp-action="ToggleSlotAvailability">
-                                    <input type="hidden" name="mentorScheduleId" value="0" />
-                                    <input type="hidden" name="slotId" value="@slot.Id" />
-                                    <input type="hidden" name="date" value="@Model.WeekStartDate.AddDays(day).ToString("yyyy-MM-dd")" />
-                                    <button type="submit" class="btn btn-sm btn-success">Mark as Available</button>
-                                </form>
-                            }
-                        }
-                    </td>
-                }
-            </tr>
-        }
-    </tbody>
-</table>
 
+										var currentDate = Model.WeekStartDate.AddDays(day);
+
+
+
+										var schedules = Model.DailySchedules.FirstOrDefault(ds => ds.Date == currentDate)?.MentorSchedules;
+
+
+
+										var currentSchedule = schedules?.FirstOrDefault(ms => ms.SlotId == slot.Id);
+
+
+
+										var isPastSlot = (currentDate.Date == DateTime.Today && DateTime.Now.TimeOfDay > slot.EndTime.ToTimeSpan()) || currentDate < DateTime.Today;
+
+										<td>
+											@if (currentSchedule != null)
+
+
+
+											{
+												<div class="status-slot">
+													@if (currentSchedule.Status == "available")
+
+
+
+													{
+														<span class="badge bg-success">Available</span>
+														@if (!isPastSlot)
+
+
+
+														{
+															<form method="post" asp-action="ToggleSlotAvailability">
+																<input type="hidden" name="mentorScheduleId" value="@currentSchedule.Id" />
+																<input type="hidden" name="slotId" value="@slot.Id" />
+																<input type="hidden" name="date" value="@currentDate.ToString("yyyy-MM-dd")" />
+																<button type="submit" class="btn btn-sm btn-warning">Change Status</button>
+															</form>
+														}
+													}
+
+
+
+													else if (currentSchedule.Status == "booked")
+
+
+
+													{
+														<span class="badge bg-danger">Booked</span>
+													}
+
+
+
+													else
+
+
+
+													{
+														<span class="badge bg-warning">Unavailable</span>
+														@if (!isPastSlot)
+
+
+
+														{
+															<form method="post" asp-action="ToggleSlotAvailability">
+																<input type="hidden" name="mentorScheduleId" value="@currentSchedule.Id" />
+																<input type="hidden" name="slotId" value="@slot.Id" />
+																<input type="hidden" name="date" value="@currentDate.ToString("yyyy-MM-dd")" />
+																<button type="submit" class="btn btn-sm btn-success">Change Status</button>
+															</form>
+														}
+													}
+												</div>
+											}
+
+											else
+
+											{
+												<span class="text-muted">-</span>
+												@if (!isPastSlot)
+
+												{
+													<form method="post" asp-action="ToggleSlotAvailability">
+														<input type="hidden" name="mentorScheduleId" value="0" />
+														<input type="hidden" name="slotId" value="@slot.Id" />
+														<input type="hidden" name="date" value="@currentDate.ToString("yyyy-MM-dd")" />
+														<button type="submit" class="btn btn-sm btn-success">Change Status</button>
+													</form>
+												}
+											}
+										</td>
+									}
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+
+				<!-- Previous and Next Week buttons -->
+				<div class="d-flex justify-content-between mt-3">
+					<a href="@Url.Action("SetSchedule", new { startDate = Model.WeekStartDate.AddDays(-7) })" class="btn btn-primary">Previous Week</a>
+					<a href="@Url.Action("SetSchedule", new { startDate = Model.WeekStartDate.AddDays(7) })" class="btn btn-primary">Next Week</a>
+				</div>
+			</main>
+		</div>
+	</div>
+
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
